@@ -9,11 +9,41 @@ header, nav, main, footer {
     color: rgb(227, 242, 255);
 }
 
-ul {
-    list-style-type: none;
+a[href="#home"],
+a[href="about.html"],
+a[href="Kontakt.html"],
+a[href="skibidi-toilett.html"] {
+    font-size: 30px;
+    font-weight: bold;
 }
 
 header h1 {
     color: rgb(0, 0, 239);
 }
+
+
+/* titel felder */
+nav ul {
+    display: flex;        /* Flexbox-Layout verwenden */
+    justify-content: center; /* Horizontales Zentrieren der Elemente */
+    list-style-type: none;   /* Entfernt die Aufzählungszeichen */
+    padding: 0;              /* Entfernt den Standard-Padding */
+}
+nav ul li {
+    margin: 0 50px; /* Fügt horizontalen Abstand zwischen den Links hinzu */
+}
+
+nav ul li a {
+    text-decoration: none; /* Entfernt die Unterstreichung von Links */
+}
+
+
+/* box style */
+.box {
+    width: 100vw;           /* Breite des Kastens */
+    height: auto;           /* Automatische Höhe basierend auf Inhalt */
+    background-color: #f8f8f8; /* Hintergrundfarbe */
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Schatteneffekt für einen 3D-Look */
+}
+
 
