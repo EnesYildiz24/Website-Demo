@@ -9,12 +9,14 @@ header, nav, main, footer {
     color: rgb(227, 242, 255);
 }
 
-a[href="#home"],
-a[href="about.html"],
-a[href="Kontakt.html"],
-a[href="skibidi-toilett.html"] {
-    font-size: 30px;
+.box a{
+    font-size: 20px;
     font-weight: bold;
+    transition: font-size 0.3s; /* Weiche Animation für die Schriftgrößenänderung */
+}
+
+.box a:hover {
+    font-size: 30px; /* Vergrößert die Schriftgröße beim Hover */
 }
 
 header h1 {
