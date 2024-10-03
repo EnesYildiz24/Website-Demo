@@ -4,7 +4,7 @@ body {
 }
 
 header, nav, main, footer {
-    padding: 20px;
+    padding: 0px;
     text-align: center;
     color: rgb(227, 242, 255);
 }
@@ -16,13 +16,13 @@ header, nav, main, footer {
 }
 
 .box a:hover {
-    font-size: 30px; /* Vergrößert die Schriftgröße beim Hover */
+    font-size: 25px; /* Vergrößert die Schriftgröße beim Hover */
 }
 
 header h1 {
-    color: rgb(0, 0, 239);
-}
+    color: rgb(0, 167, 239);
 
+}
 
 /* titel felder */
 nav ul {
@@ -38,14 +38,75 @@ nav ul li {
 nav ul li a {
     text-decoration: none; /* Entfernt die Unterstreichung von Links */
 }
-
-
 /* box style */
 .box {
-    width: 100vw;           /* Breite des Kastens */
+    width: auto;           /* Breite des Kastens */
     height: auto;           /* Automatische Höhe basierend auf Inhalt */
     background-color: #f8f8f8; /* Hintergrundfarbe */
     box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Schatteneffekt für einen 3D-Look */
+}
+
+#contactButtom {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color:white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#contactButtom:hover{
+    background-color: 0056b3;
+}
+
+div form label{
+    color: rgb(227, 242, 255);
+}
+
+/* Kontakt box */
+.contact-form {
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+    background-color: #1a1a1a;
+    border-radius: 10px;
+}
+
+.contact-form label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+
+.contact-form input[type="text"],
+.contact-form input[type="email"],
+.contact-form textarea {
+    width: 97%;
+    padding: 8px;
+    margin-top: 5px;
+    background-color: #1a1a1a;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.contact-form textarea{
+    height: 100px;
+}
+
+.contact-form button {
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 6px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.contact-form button:hover {
+    background-color: #ff00cc;
 }
 
 
