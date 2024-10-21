@@ -1,0 +1,129 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #1a1a1a;
+}
+
+header, nav, main, footer {
+  padding: 0px;
+  text-align: center;
+  color: rgb(227, 242, 255);
+}
+
+.box a {
+  font-size: 20px;
+  font-weight: bold;
+  transition: font-size 0.3s; /* Weiche Animation für die Schriftgrößenänderung */
+}
+
+.box a:hover {
+  font-size: 25px; /* Vergrößert die Schriftgröße beim Hover */
+}
+
+header h1 {
+  color: rgb(0, 167, 239);
+}
+
+/* Titel Felder */
+nav ul {
+  display: flex;                 /* Flexbox-Layout verwenden */
+  justify-content: center;        /* Horizontales Zentrieren der Links */
+  align-items: center;            /* Vertikales Zentrieren der Links */
+  list-style-type: none;          /* Entfernt die Aufzählungszeichen */
+  padding: 0;                     /* Entfernt den Standard-Padding */
+  margin: 0;                      /* Entfernt das Standard-Margin */
+}
+
+nav ul li {
+  margin: 0 20px;                 /* Gleicher Abstand zwischen den Links */
+}
+
+nav ul li a {
+  text-decoration: none;          /* Entfernt die Unterstreichung von Links */
+}
+
+
+/* Box Style */
+.box {
+  width: auto;           /* Breite des Kastens */
+  height: auto;           /* Automatische Höhe basierend auf Inhalt */
+  background-color: #f8f8f8; /* Hintergrundfarbe */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Schatteneffekt für einen 3D-Look */
+}
+
+#contactButton {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#contactButton:hover {
+  background-color: #0056b3;
+}
+
+div form label {
+  color: rgb(227, 242, 255);
+}
+
+/* Kontakt Box */
+.contact-form {
+  max-width: 400px;
+  margin: auto;
+  padding: 20px;
+  background-color: #1a1a1a;
+  border-radius: 10px;
+}
+
+.contact-form label {
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
+}
+
+.contact-form input[type="text"],
+.contact-form input[type="email"],
+.contact-form textarea {
+  width: 97%;
+  padding: 8px;
+  margin-top: 5px;
+  background-color: #1a1a1a;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.contact-form textarea {
+  height: 100px;
+}
+
+.contact-form button {
+  background-color: #0056b3;
+  color: white;
+  border: none;
+  padding: 6px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.contact-form button:hover {
+  background-color: #ff00cc;
+}
+
+main {
+  display: flex;                 /* Flexbox verwenden */
+  flex-direction: column;         /* Elemente in einer Spalte anordnen */
+  align-items: center;            /* Horizontales Zentrieren */
+  justify-content: center;        /* Vertikales Zentrieren (falls nötig) */
+  text-align: center;             /* Text innerhalb der Elemente zentrieren */
+  height: auto;                   /* Automatische Höhe */
+}
+
+footer {
+  text-align: center;             /* Zentriert den Text im Footer */
+  padding: 10px 0;                /* Fügt etwas Abstand oben und unten hinzu */
+  color: rgb(227, 242, 255);      /* Textfarbe */
+}
