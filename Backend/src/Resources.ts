@@ -13,7 +13,7 @@ export type UserResource = {
     username: string;
     email?: string;
     password?: string;
-    role: "a" | "s" | "b";
+    role: string;
   };
   
   /**
