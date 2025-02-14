@@ -24,7 +24,7 @@ export async function createUser(
     };
   } catch {
     logger.error("user konnte nicht erstellt werden");
-    throw new Error("Prof created failed");
+    throw new Error("User created failed");
   }
 }
 
