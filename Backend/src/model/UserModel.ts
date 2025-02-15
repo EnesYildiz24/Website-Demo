@@ -27,6 +27,7 @@ const myUserSchema = new Schema<IUser>(
   },
   {
     timestamps: true,
+    discriminatorKey: 'kind'
   }
 );
 
