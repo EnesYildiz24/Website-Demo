@@ -70,7 +70,7 @@ export async function updateUser(
       role: user.role,
     };
   } catch (err) {
-    throw new Error("update fehlgeschlagen: " + err);
+    throw new Error("update User fehlgeschlagen: " + err);
   }
 }
 

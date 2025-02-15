@@ -55,7 +55,7 @@ export type UserResource = {
     buyerId: string;
     productId: string;
     orderDate: string;
-    status: "pending" | "completed" | "cancelled";
+    status: string;
     paymentInfo: string;
   };
   

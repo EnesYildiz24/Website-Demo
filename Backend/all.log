@@ -1,0 +1,2 @@
+error: Order konnte nicht erstellt werden: ValidationError: buyerId: Cast to ObjectId failed for value "buyer123" (type string) at path "buyerId" because of "BSONError", productId: Cast to ObjectId failed for value "product123" (type string) at path "productId" because of "BSONError"
+error: Order konnte nicht erstellt werden: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer

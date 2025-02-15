@@ -63,7 +63,7 @@ export async function createCategory(
         description: category.description,
       };
     } catch (err) {
-      throw new Error("update fehlgeschlagen: " + err);
+      throw new Error("update Category fehlgeschlagen: " + err);
     }
   }
 
