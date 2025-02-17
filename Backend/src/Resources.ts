@@ -18,7 +18,7 @@ export type UserResource = {
 
 /**
  * BuyerResource
- * 
+ *
  * Dient zur Darstellung von Käufer-Daten in der API.
  * - id: Optional, da bei der Erstellung noch nicht vorhanden. Später aber immer vorhanden.
  * - username: Der Benutzername des Käufers.
@@ -33,6 +33,31 @@ export type BuyerResource = {
   password?: string;
   role: "buyer";
 };
+
+/**
+ * SellerResource
+ *
+ * Dient zur Darstellung von Verkäufer-Daten in der API.
+ * - id: Optional, da bei der Erstellung noch nicht vorhanden. Später aber immer vorhanden.
+ * - username: Der Benutzername des Verkäufers.
+ * - email: Optional – beim Schreiben enthalten, beim Lesen ggf. eingeschränkt.
+ * - password: Write-only, d.h. beim Lesen niemals enthalten.
+ * - role: Immer "seller", da es sich um einen Verkäufer handelt.
+ *
+ * Tipp: Brauchst du eigene Verkäufer-Felder? (z.B. Shopname, Bankverbindung)
+ *       Dann ergänze sie hier.
+ */
+export type SellerResource = {
+  id?: string;
+  username: string;
+  email?: string;
+  password?: string;
+  role: "seller";
+  shopName?: string;
+  contactInfo?: string;
+  rating?: number;
+};
+
 /**
  * ProductResource
  *

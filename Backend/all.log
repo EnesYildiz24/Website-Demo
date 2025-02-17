@@ -1,3 +1,12 @@
 error: Order konnte nicht erstellt werden: ValidationError: buyerId: Cast to ObjectId failed for value "buyer123" (type string) at path "buyerId" because of "BSONError", productId: Cast to ObjectId failed for value "product123" (type string) at path "productId" because of "BSONError"
 error: Order konnte nicht erstellt werden: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
 error: Update Admin fehlgeschlagen: Error: Cannot update admin with id 67b295e66dac17d0caf3ae61
+error: Verkäufer konnte nicht erstellt werden: ValidationError: contactInfo: Path `contactInfo` is required., shopName: Path `shopName` is required.
+error: Verkäufer konnte nicht erstellt werden: ValidationError: contactInfo: Path `contactInfo` is required., shopName: Path `shopName` is required.
+error: Verkäufer konnte nicht erstellt werden: ValidationError: contactInfo: Path `contactInfo` is required., shopName: Path `shopName` is required.
+error: Delete Verkäufer fehlgeschlagen: Error: Cannot delete Verkäufer with id 67b2b0496b4d71a417dcfdcd
+error: Update Verkäufer fehlgeschlagen: Error: Cannot update Seller with id 67b2b0600a149c1c8e18187f
+error: Update Verkäufer fehlgeschlagen: Error: Cannot update Seller with id 67b2b08a0010017c583385f2
+error: Delete Verkäufer fehlgeschlagen: Error: Cannot delete Verkäufer with id 67b2b08a0010017c583385f5
+error: Delete Admin fehlgeschlagen: Error: Cannot delete admin with id 67b2b0a5ba6ed9121b0785b8
+error: Update Customer fehlgeschlagen: Error: Cannot update Customer with id 67b2b0e14ecc23443c37b3e2

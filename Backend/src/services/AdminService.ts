@@ -6,6 +6,12 @@ export async function createAdmin(
   adminResource: AdminResource
 ): Promise<AdminResource> {
   try {
+    const existingAdmin = await Admin.findOne({
+      email: adminResource.email,
+    });
+    if (existingAdmin) {
+      throw new Error("Email must be unique");
+    }
     const admin = await Admin.create({
       username: adminResource.username,
       email: adminResource.email,

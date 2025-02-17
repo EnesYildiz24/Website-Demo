@@ -8,9 +8,9 @@ export interface ISeller extends IUser {
   }
   
   const SellerSchema = new Schema<ISeller>({
-    shopName: { type: String, required: true },
+    shopName: { type: String, required: false },
     rating: { type: Number, default: 0 },
-    contactInfo: { type: String, required: true }
+    contactInfo: { type: String, required: false }
   });
   
   export const Seller = User.discriminator<ISeller>("seller", SellerSchema);

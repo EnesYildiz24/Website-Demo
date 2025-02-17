@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { logger } from "../logger";
-import { Category } from "../model/CategoryModel";
 import { Order } from "../model/OrderModel";
 import { OrderResource } from "../Resources";
 

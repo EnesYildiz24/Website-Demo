@@ -1,4 +1,3 @@
-import { promises } from "dns";
 import { BuyerResource } from "../Resources";
 import { Buyer } from "../model/BuyerModel";
 import { logger } from "../logger";
@@ -7,6 +6,12 @@ export async function createBuyer(
   buyerResource: BuyerResource
 ): Promise<BuyerResource> {
   try {
+    const existingBuyer = await Buyer.findOne({
+      email: buyerResource.email,
+    });
+    if (existingBuyer) {
+      throw new Error("Email must be unique");
+    }
     const buyer = await Buyer.create({
       username: buyerResource.username,
       email: buyerResource.email,
@@ -21,7 +26,7 @@ export async function createBuyer(
     };
   } catch (err) {
     logger.error("Käufer konnte nicht erstellt werden: " + err);
-    throw new Error("Käufer creation failed: " + err)
+    throw new Error("Käufer creation failed: " + err);
   }
 }
 
@@ -34,7 +39,7 @@ export async function getAllBuyers(): Promise<BuyerResource[]> {
       email: buyer.email,
       role: "buyer" as "buyer",
     }));
-    return buyerResources; 
+    return buyerResources;
   } catch (err) {
     throw new Error("Error fetching customer: " + err);
   }
