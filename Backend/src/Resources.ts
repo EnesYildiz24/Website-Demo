@@ -17,6 +17,23 @@ export type UserResource = {
 };
 
 /**
+ * BuyerResource
+ * 
+ * Dient zur Darstellung von Käufer-Daten in der API.
+ * - id: Optional, da bei der Erstellung noch nicht vorhanden. Später aber immer vorhanden.
+ * - username: Der Benutzername des Käufers.
+ * - email: Optional – beim Schreiben enthalten, beim Lesen ggf. eingeschränkt.
+ * - password: Write-only, d.h. beim Lesen niemals enthalten.
+ * - role: Immer "b", da es sich um einen Käufer handelt.
+ */
+export type BuyerResource = {
+  id?: string;
+  username: string;
+  email?: string;
+  password?: string;
+  role: "b";
+};
+/**
  * ProductResource
  *
  * Dient zur Darstellung eines Produkts (z. B. eines Spiels) in der API.
