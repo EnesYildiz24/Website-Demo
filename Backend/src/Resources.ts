@@ -31,7 +31,7 @@ export type BuyerResource = {
   username: string;
   email?: string;
   password?: string;
-  role: "b";
+  role: "buyer";
 };
 /**
  * ProductResource
@@ -127,7 +127,7 @@ export type AdminResource = {
   username: string;
   email?: string;
   password?: string;
-  role: "a";
+  role: "admin";
   permissions: string[];
 };
 

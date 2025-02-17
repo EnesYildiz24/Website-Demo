@@ -22,7 +22,7 @@ describe('Admin Service Tests', () => {
       username: 'testadmin',
       email: 'admin@example.com',
       password: 'adminpass',
-      role: 'a' as "a",  
+      role: 'admin' as "admin",  
       permissions: ['CAN_MANAGE_USERS', 'CAN_VIEW_REPORTS'],
     };
 
@@ -30,7 +30,7 @@ describe('Admin Service Tests', () => {
     expect(admin).toHaveProperty('id');
     expect(admin.username).toBe('testadmin');
     expect(admin.email).toBe('admin@example.com');
-    expect(admin.role).toBe('a');
+    expect(admin.role).toBe('admin');
     expect(admin.permissions).toEqual(expect.arrayContaining(['CAN_MANAGE_USERS', 'CAN_VIEW_REPORTS']));
   });
 
@@ -53,13 +53,13 @@ describe('Admin Service Tests', () => {
       username: 'newadmin',
       email: 'newadmin@example.com',
       password: 'newpass', 
-      role: 'a', 
+      role: 'admin', 
       permissions: ['NEW_PERMISSION'],
     });
 
     expect(updatedAdmin.username).toBe('newadmin');
     expect(updatedAdmin.email).toBe('newadmin@example.com');
-    expect(updatedAdmin.role).toBe('a');
+    expect(updatedAdmin.role).toBe('admin');
     expect(updatedAdmin.permissions).toEqual(['NEW_PERMISSION']);
   });
 
@@ -76,7 +76,7 @@ describe('Admin Service Tests', () => {
     expect(deletedAdmin.id).toBe(admin._id.toString());
     expect(deletedAdmin.username).toBe('deleteadmin');
     expect(deletedAdmin.email).toBe('deleteadmin@example.com');
-    expect(deletedAdmin.role).toBe('a');
+    expect(deletedAdmin.role).toBe('admin');
     expect(deletedAdmin.permissions).toEqual(['DELETE_PERMISSION']);
   });
 });

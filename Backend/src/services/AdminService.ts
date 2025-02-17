@@ -17,7 +17,7 @@ export async function createAdmin(
       id: admin._id.toString(),
       username: admin.username,
       email: admin.email,
-      role: "a",
+      role: "admin",
       permissions: admin.permissions,
     };
   } catch (err) {
@@ -33,7 +33,7 @@ export async function getAllAdmins(): Promise<AdminResource[]> {
       id: admin._id.toString(),
       username: admin.username,
       email: admin.email,
-      role: "a" as "a",
+      role: "admin" as "admin",
       permissions: admin.permissions,
     }));
     return adminResources; 
@@ -66,7 +66,7 @@ export async function updateAdmin(
       id: admin._id.toString(),
       username: admin.username,
       email: admin.email,
-      role: "a",
+      role: "admin",
       permissions: admin.permissions,
     };
   } catch (err) {
@@ -88,7 +88,7 @@ export async function deleteAdmin(adminId: string): Promise<AdminResource> {
       id: admin._id.toString(),
       username: admin.username,
       email: admin.email,
-      role: "a",
+      role: "admin",
       permissions: admin.permissions,
     };
   } catch (err) {

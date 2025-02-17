@@ -17,7 +17,7 @@ export async function createBuyer(
       id: buyer._id.toString(),
       username: buyer.username,
       email: buyer.email,
-      role: "b",
+      role: "buyer",
     };
   } catch (err) {
     logger.error("Käufer konnte nicht erstellt werden: " + err);
@@ -32,10 +32,62 @@ export async function getAllBuyers(): Promise<BuyerResource[]> {
       id: buyer._id.toString(),
       username: buyer.username,
       email: buyer.email,
-      role: "b" as "b",
+      role: "buyer" as "buyer",
     }));
     return buyerResources; 
   } catch (err) {
     throw new Error("Error fetching customer: " + err);
+  }
+}
+
+export async function updateBuyer(
+  buyerResource: BuyerResource
+): Promise<BuyerResource> {
+  if (!buyerResource.id) {
+    throw new Error("Customer id is missing, can't update it");
+  }
+  try {
+    const buyer = await Buyer.findOneAndUpdate(
+      { _id: buyerResource.id },
+      {
+        username: buyerResource.username,
+        email: buyerResource.email,
+        ...(buyerResource.password && { password: buyerResource.password }),
+      },
+      { new: true }
+    );
+    if (!buyer) {
+      throw new Error(`Cannot update Customer with id ${buyerResource.id}`);
+    }
+    return {
+      id: buyer._id.toString(),
+      username: buyer.username,
+      email: buyer.email,
+      role: "buyer",
+    };
+  } catch (err) {
+    logger.error("Update Customer fehlgeschlagen: " + err);
+    throw new Error("Update Customer failed: " + err);
+  }
+}
+
+export async function deleteBuyer(buyerId: string): Promise<BuyerResource> {
+  if (!buyerId) {
+    throw new Error("Customer id is missing, can't delete it");
+  }
+  try {
+    const buyer = await Buyer.findByIdAndDelete(buyerId);
+    if (!buyer) {
+      throw new Error(`Cannot delete Customer with id ${buyerId}`);
+    }
+    return {
+      id: buyer._id.toString(),
+      username: buyer.username,
+      email: buyer.email,
+      role: "buyer",
+    };
+  } catch (err) {
+    logger.error("Delete Customer fehlgeschlagen: " + err);
+    throw new Error("Delete Customer failed: " + err);
   }
 }
