@@ -10,3 +10,4 @@ error: Update Verkäufer fehlgeschlagen: Error: Cannot update Seller with id 67b
 error: Delete Verkäufer fehlgeschlagen: Error: Cannot delete Verkäufer with id 67b2b08a0010017c583385f5
 error: Delete Admin fehlgeschlagen: Error: Cannot delete admin with id 67b2b0a5ba6ed9121b0785b8
 error: Update Customer fehlgeschlagen: Error: Cannot update Customer with id 67b2b0e14ecc23443c37b3e2
+error: Update Product failed: Error: Cannot update Product with id: 67b53b70402a2c3d159ebba1

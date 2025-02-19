@@ -4,10 +4,10 @@ export interface IProduct {
   titel: string;
   description: string;
   price: number;
-  images: String[];
+  images: string[];
+  category: string;
   createdAt?: Date;
-  updatedAt?: Date; 
-  category: String
+  updatedAt?: Date;
 }
 
 export type productModel = Model<IProduct>;
@@ -16,13 +16,16 @@ const myProductSchema = new Schema<IProduct>(
   {
     titel: { type: String, required: true },
     description: { type: String, required: true },
-    price: { type: Number, required: true ,  default: 0 },
+    price: { type: Number, required: true, default: 0 },
     images: { type: [String], required: true },
-    category: { type: String, required: true }
+    category: { type: String, required: true },
   },
   {
     timestamps: true,
   }
 );
 
-export const Product = model<IProduct, productModel>("Product", myProductSchema);
+export const Product = model<IProduct, productModel>(
+  "Product",
+  myProductSchema
+);

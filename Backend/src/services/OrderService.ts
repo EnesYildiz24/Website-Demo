@@ -8,8 +8,8 @@ export async function createOrder(
 ): Promise<OrderResource> {
   try {
     const order = await Order.create({
-        buyerId: new mongoose.Types.ObjectId(orderResources.buyerId),
-        productId: new mongoose.Types.ObjectId(orderResources.productId),
+      buyerId: new mongoose.Types.ObjectId(orderResources.buyerId),
+      productId: new mongoose.Types.ObjectId(orderResources.productId),
       orderDate: orderResources.orderDate,
       status: "pending",
       paymentInfo: orderResources.paymentInfo,
