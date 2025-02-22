@@ -43,6 +43,23 @@ export async function getAlleUser(): Promise<UserResource[]> {
   }
 }
 
+export async function getUser(id: string): Promise<UserResource> {
+  try {
+    const user = await User.findById(id).exec();
+    if(!user){
+      throw new Error("User nict gefunden!")
+    }
+    return {
+      id: user?.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+    };
+  } catch (err) {
+    throw new Error("User not Found: " + err);
+  }
+}
+
 export async function updateUser(
   userResource: UserResource
 ): Promise<UserResource> {
