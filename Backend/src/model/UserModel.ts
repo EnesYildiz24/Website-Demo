@@ -1,4 +1,4 @@
-import { Schema, model, Types, Model } from "mongoose";
+import { Schema, model, Model } from "mongoose";
 import bcrypt from "bcrypt";
 
 export interface IUser {
@@ -8,13 +8,14 @@ export interface IUser {
   role: "admin" | "seller" | "buyer";
 }
 
-export type userModel = Model<IUser>;
+export type UserModel = Model<IUser, {}, IUserMethods>;
+
 
 export interface IUserMethods {
   isCorrectPassword(candidatePassword: string): Promise<boolean>;
 }
 
-const myUserSchema = new Schema<IUser>(
+const myUserSchema = new Schema<IUser, UserModel, IUserMethods>(
   {
     username: { type: String, required: true },
     email: { type: String, required: true },
@@ -40,7 +41,7 @@ myUserSchema.pre("save", async function (next) {
 });
 
 myUserSchema.pre("updateOne", async function (next) {
-  const update = this.getUpdate();
+  const update = this.getUpdate() as Partial<IUser>;
   if (update && "password" in update) {
     if (update.password) {
       update.password = await bcrypt.hash(update.password, 10);
@@ -52,11 +53,14 @@ myUserSchema.pre("updateOne", async function (next) {
 myUserSchema.method(
   "isCorrectPassword",
   async function (candiatePassword: string): Promise<boolean> {
-    if (!this.password || this.password.slice(0, 4) !== "$2a$") {
+    if (
+      !this.password ||
+      (this.password.slice(0, 4) !== "$2a$" && this.password.slice(0, 4) !== "$2b$")
+    ) {
       throw new Error("password not hashed");
     }
     return bcrypt.compare(candiatePassword, this.password);
   }
 );
 
-export const User = model<IUser, userModel>("User", myUserSchema);
+export const User = model<IUser, UserModel>("User", myUserSchema);
