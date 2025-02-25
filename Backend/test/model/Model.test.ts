@@ -33,7 +33,8 @@ describe('User Service Tests', () => {
   it('should update a user', async () => {
     const user = await User.create({ username: 'oldname', email: 'old@example.com', password: 'oldpass', role: 'buyer' });
     const updated = await updateUser({ id: user._id.toString(), username: 'newname', email: 'new@example.com', password: 'newpass', role: 'seller' });
-    expect(updated.username).toBe('newname');
+    expect(updated).not.toBeNull();
+    expect(updated!.username).toBe('newname');
   });
 
   it('should delete a user', async () => {

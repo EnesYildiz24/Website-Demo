@@ -62,7 +62,7 @@ export async function getUser(id: string): Promise<UserResource> {
 
 export async function updateUser(
   userResource: UserResource
-): Promise<UserResource> {
+): Promise<UserResource | null> {
   if (!userResource.id) {
     throw new Error("User id is missing, cant update it");
   }
@@ -78,7 +78,7 @@ export async function updateUser(
       { new: true }
     );
     if (!user) {
-      throw new Error(`cant update the User ${userResource.id}`);
+      return null;
     }
     return {
       id: user._id.toString(),

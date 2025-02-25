@@ -18,7 +18,6 @@ export async function verifyPasswordAndCreateJWT(
     return undefined;
   }
 
-  // Mapping der Rollentypen von "admin" | "seller" | "buyer" zu "a" | "s" | "b"
   let mappedRole: "a" | "s" | "b";
   switch (loggedInUser.role) {
     case "admin":

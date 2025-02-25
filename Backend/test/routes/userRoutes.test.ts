@@ -2,7 +2,7 @@ import request from "supertest";
 import express, { Application } from "express";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import userRouter from "../../src/routes/user"; 
+import { userRouter } from "../../src/routes/user"; 
 import { User } from "../../src/model/UserModel";
 
 describe("User Router CRUD Tests", () => {

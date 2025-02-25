@@ -9,6 +9,7 @@ import {
 import { UserResource } from "../Resources";
 import { User } from "../model/UserModel";
 import { body, param, validationResult } from "express-validator";
+import { logger } from "../logger";
 
 const userRouter = Router();
 const allowedRoles = ["admin", "seller", "buyer"];
@@ -18,32 +19,65 @@ userRouter.get("/", async (req: Request, res: Response) => {
     const users = await getAlleUser();
     res.json(users);
   } catch (error) {
+    logger.error("Fehler beim Löschen eines Users:", error);
     res.status(500).json({ message: "Fehler beim Abrufen der User", error });
   }
 });
 
 userRouter.get(
   "/:id",
+  param("id").isMongoId().withMessage("Ungültige User-ID"),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const users = await getUser(req.params.id);
+      if (!users) {
+        res.status(404).json({
+          message: `Kein User mit der ID ${req.params.id} gefunden`,
+        });
+        return;
+      }
       res.json(users);
     } catch (error) {
+      logger.error("Fehler beim Löschen eines Users:", error);
+      res
+        .status(500)
+        .json({ message: "Fehler beim Abrufen eines Users", error });
       next(error);
     }
   }
 );
 
-userRouter.post("/", async (req: Request, res: Response) => {
-  try {
-    const newUser = await createUser(req.body);
-    res.status(201).json(newUser);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Fehler beim Erstellen eines Users", error });
+userRouter.post(
+  "/",
+  [
+    body("username")
+      .notEmpty()
+      .withMessage("Der Benutzername darf nicht leer sein"),
+    body("email").isEmail().withMessage("Ungültige E-Mail-Adresse"),
+    body("password")
+      .isLength({ min: 6 })
+      .withMessage("Das Passwort muss mindestens 6 Zeichen lang sein"),
+    body("role")
+      .isIn(allowedRoles)
+      .withMessage("Rolle muss admin, seller oder buyer sein"),
+  ],
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() });
+      return;
+    }
+    try {
+      const newUser = await createUser(req.body);
+      res.status(201).json(newUser);
+    } catch (error) {
+      logger.error("Fehler beim Erstellen eines Users:", error);
+      res
+        .status(500)
+        .json({ message: "Fehler beim Erstellen eines Users", error });
+    }
   }
-});
+);
 
 userRouter.put(
   "/:id",
@@ -63,41 +97,34 @@ userRouter.put(
       .isIn(allowedRoles)
       .withMessage("Rolle muss admin, seller oder buyer sein"),
   ],
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() });
+      return;
+    }
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        res.status(400).json({ errors: errors.array() });
-        return;
-      }
-      const userId = req.params.id;
-      const userResource: UserResource = req.body;
-      const user = await User.findById(userId).exec();
-      if (!user) {
+      const userResource: UserResource = {
+        id: req.params.id,
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
+        role: req.body.role,
+      };
+      const updatedUser = await updateUser(userResource);
+      if (!updatedUser) {
         res.status(404).json({
-          message: `Kein User mit der ID ${userId} gefunden, Update nicht möglich`,
+          message: `Kein User mit der ID ${req.params.id} gefunden, Update nicht möglich`,
         });
-        return;
       }
-
-      user.username = userResource.username;
-      if (userResource.email) user.email = userResource.email;
-      if (userResource.password) user.password = userResource.password;
-      user.role = userResource.role as "admin" | "seller" | "buyer";
-
-      const updatedUser = await user.save();
-
-      res.json({
-        id: updatedUser._id.toString(),
-        username: updatedUser.username,
-        email: updatedUser.email,
-        role: updatedUser.role,
-      });
+      res.json(updatedUser);
     } catch (error) {
+      logger.error("Fehler beim Aktualisieren eines Users:", error);
       next(error);
     }
   }
 );
+
 
 userRouter.delete("/:id", async (req: Request, res: Response) => {
   try {
@@ -114,4 +141,4 @@ userRouter.delete("/:id", async (req: Request, res: Response) => {
   }
 });
 
-export default userRouter;
+export { userRouter };

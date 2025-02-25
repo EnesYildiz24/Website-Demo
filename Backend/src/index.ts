@@ -9,4 +9,6 @@ app.get('/', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server läuft auf http://localhost:${port}`);
+}).on('error', (err) => {
+  console.error('Fehler beim Starten des Servers:', err);
 });
