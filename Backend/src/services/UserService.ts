@@ -78,7 +78,7 @@ export async function updateUser(
       { new: true }
     );
     if (!user) {
-      return null;
+      throw new Error(`cant update the User ${userResource.id}`);
     }
     return {
       id: user._id.toString(),

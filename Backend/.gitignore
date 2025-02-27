@@ -9,6 +9,8 @@ node_modules
 .npm
 .eslintcache
 .tsbuildinfo
+# Environment variables
+.env
 # macos specific files
 .DS_Store
 # test output

@@ -32,6 +32,9 @@ export async function createProduct(
 export async function getAllProduct(): Promise<ProductResource[]> {
   try {
     const products = await Product.find({}).exec();
+    if (!products) {
+      throw new Error("Product not found");
+    }
     return products.map((product) => ({
       id: product._id.toString(),
       titel: product.titel,
@@ -45,6 +48,29 @@ export async function getAllProduct(): Promise<ProductResource[]> {
   } catch (err) {
     logger.error("Error fetching Products: " + err);
     throw new Error("Error fetching Products: " + err);
+  }
+}
+export async function getProduct(
+  productId: string
+): Promise<ProductResource> {
+  try {
+    const product = await Product.findById(productId).exec();
+    if (!product) {
+      throw new Error("No product found");
+    }
+    return {
+      id: product._id.toString(),
+      titel: product.titel,
+      description: product.description,
+      price: product.price,
+      images: product.images,
+      category: product.category,
+      createdAt: product.createdAt?.toISOString(),
+      updatedAt: product.updatedAt?.toISOString(),
+    };
+  } catch (err) {
+    logger.error("Error fetching Product: " + err);
+    throw new Error("Error fetching Product: " + err);
   }
 }
 export async function updateProduct(
@@ -63,7 +89,7 @@ export async function updateProduct(
         images: productResource.images,
         category: productResource.category,
       },
-      { new: true } 
+      { new: true }
     );
 
     if (!product) {
@@ -86,7 +112,9 @@ export async function updateProduct(
   }
 }
 
-export async function deleteProduct(productId: string): Promise<ProductResource> {
+export async function deleteProduct(
+  productId: string
+): Promise<ProductResource> {
   if (!productId) {
     throw new Error("Product id is missing, can't delete it");
   }

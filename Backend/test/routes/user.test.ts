@@ -14,7 +14,6 @@ const app = express();
 app.use(express.json());
 app.use("/users", userRouter);
 
-// Error handling middleware
 interface Error {
   message: string;
 }
