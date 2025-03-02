@@ -42,7 +42,25 @@ export async function getAllAdmins(): Promise<AdminResource[]> {
       role: "admin" as "admin",
       permissions: admin.permissions,
     }));
-    return adminResources; 
+    return adminResources;
+  } catch (err) {
+    throw new Error("Error fetching admins: " + err);
+  }
+}
+
+export async function getAdmin(id: string): Promise<AdminResource> {
+  try {
+    const admin = await Admin.findById(id).exec();
+    if (!admin) {
+      throw new Error("Admin nict gefunden!");
+    }
+    return {
+      id: admin._id.toString(),
+      username: admin.username,
+      email: admin.email,
+      role: "admin" as "admin",
+      permissions: admin.permissions,
+    };
   } catch (err) {
     throw new Error("Error fetching admins: " + err);
   }

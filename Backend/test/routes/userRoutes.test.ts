@@ -1,11 +1,21 @@
+import dotenv from "dotenv";
+dotenv.config();
 import request from "supertest";
 import express, { Application } from "express";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { userRouter } from "../../src/routes/user"; 
+import { userRouter } from "../../src/routes/user";
 import { User } from "../../src/model/UserModel";
+import { sign } from "jsonwebtoken";
+import cookieParser from "cookie-parser";
 
 describe("User Router CRUD Tests", () => {
+  const validId = "507f1f77bcf86cd799439011";
+  const jwtSecret = process.env.JWT_SECRET || "defaultSecret";
+  const cookieName = process.env.COOKIE_NAME || "access_token";
+  const token = sign({ sub: validId, role: "admin" }, jwtSecret, {
+    expiresIn: "1h",
+  });
   let app: Application;
   let mongoServer: MongoMemoryServer;
 
@@ -19,6 +29,7 @@ describe("User Router CRUD Tests", () => {
 
     app = express();
     app.use(express.json());
+    app.use(cookieParser());
     app.use("/users", userRouter);
   });
 
@@ -46,7 +57,10 @@ describe("User Router CRUD Tests", () => {
       password: "secret123",
       role: "buyer",
     };
-    const res = await request(app).post("/users").send(newUser);
+    const res = await request(app)
+      .post("/users")
+      .set("Cookie", [`${cookieName}=${token}`]) // Token hier mitsenden
+      .send(newUser);
     expect(res.status).toBe(201);
     expect(res.body).toHaveProperty("id");
     expect(res.body.email).toBe(uniqueEmail);
@@ -60,7 +74,10 @@ describe("User Router CRUD Tests", () => {
       password: "secret123",
       role: "buyer",
     };
-    const createRes = await request(app).post("/users").send(newUser);
+    const createRes = await request(app)
+      .post("/users")
+      .set("Cookie", [`${cookieName}=${token}`]) // Token hier mitsenden
+      .send(newUser);
     expect(createRes.status).toBe(201);
     const userId = createRes.body.id;
 
@@ -78,7 +95,10 @@ describe("User Router CRUD Tests", () => {
       password: "secret123",
       role: "buyer",
     };
-    const createRes = await request(app).post("/users").send(newUser);
+    const createRes = await request(app)
+      .post("/users")
+      .set("Cookie", [`${cookieName}=${token}`]) // Token hier mitsenden
+      .send(newUser);
     expect(createRes.status).toBe(201);
     const userId = createRes.body.id;
 
@@ -88,7 +108,10 @@ describe("User Router CRUD Tests", () => {
       password: "newsecret123",
       role: "seller",
     };
-    const res = await request(app).put(`/users/${userId}`).send(updatedData);
+    const res = await request(app)
+      .put(`/users/${userId}`)
+      .set("Cookie", [`${cookieName}=${token}`]) // Token hier mitsenden
+      .send(updatedData);
     expect(res.status).toBe(200);
     expect(res.body.username).toBe("updateduser");
     expect(res.body.role).toBe("seller");
@@ -102,11 +125,18 @@ describe("User Router CRUD Tests", () => {
       password: "secret123",
       role: "buyer",
     };
-    const createRes = await request(app).post("/users").send(newUser);
+    const createRes = await request(app)
+      .post("/users")
+      .set("Cookie", [`${cookieName}=${token}`]) // Token hier mitsenden
+      .send(newUser);
     expect(createRes.status).toBe(201);
     const userId = createRes.body.id;
 
-    const res = await request(app).delete(`/users/${userId}`);
+    const res = await request(app)
+      .delete(`/users/${userId}`)
+      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", [`${cookieName}=${token}`]);
+
     expect(res.status).toBe(204);
 
     const getRes = await request(app).get(`/users/${userId}`);

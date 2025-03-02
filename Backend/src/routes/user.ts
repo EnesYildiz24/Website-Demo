@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from "express";
+import { Router, Request, Response, NextFunction, RequestHandler } from "express";
 import {
   getAlleUser,
   getUser,
@@ -7,14 +7,14 @@ import {
   deleteUser,
 } from "../services/UserService";
 import { UserResource } from "../Resources";
-import { User } from "../model/UserModel";
 import { body, param, validationResult } from "express-validator";
 import { logger } from "../logger";
+import { optionalAuthentication, requiresAuthentication } from "./authenticator";
 
 const userRouter = Router();
 const allowedRoles = ["admin", "seller", "buyer"];
 
-userRouter.get("/", async (req: Request, res: Response) => {
+userRouter.get("/", optionalAuthentication, async (req: Request, res: Response): Promise<void> => {
   try {
     const users = await getAlleUser();
     res.json(users);
@@ -27,6 +27,7 @@ userRouter.get("/", async (req: Request, res: Response) => {
 userRouter.get(
   "/:id",
   param("id").isMongoId().withMessage("Ungültige User-ID"),
+  optionalAuthentication,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const users = await getUser(req.params.id);
@@ -61,6 +62,7 @@ userRouter.post(
       .isIn(allowedRoles)
       .withMessage("Rolle muss admin, seller oder buyer sein"),
   ],
+  requiresAuthentication,
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -96,7 +98,7 @@ userRouter.put(
       .withMessage("Die Rolle ist erforderlich")
       .isIn(allowedRoles)
       .withMessage("Rolle muss admin, seller oder buyer sein"),
-  ],
+  ],requiresAuthentication,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -125,8 +127,13 @@ userRouter.put(
   }
 );
 
-
-userRouter.delete("/:id", async (req: Request, res: Response) => {
+userRouter.delete("/:id", requiresAuthentication , async (req: Request, res: Response): Promise<void> => {
+  if (req.userId !== req.params.id && req.role !== "admin") {
+    res
+      .status(403)
+      .json({ message: "Nur Admins oder der User selbst dürfen User löschen" });
+    return;
+  }
   try {
     const deletedUser = await deleteUser(req.params.id);
     if (!deletedUser) {
