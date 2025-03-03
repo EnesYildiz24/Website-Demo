@@ -45,6 +45,26 @@ export async function getAllBuyers(): Promise<BuyerResource[]> {
   }
 }
 
+export async function getBuyer(buyerId: string): Promise<BuyerResource> {
+  if (!buyerId) {
+    throw new Error("Customer id is missing, can't get it");
+  }
+  try {
+    const buyer = await Buyer.findById(buyerId);
+    if (!buyer) {
+      throw new Error(`Cannot find Customer with id ${buyerId}`);
+    }
+    return {
+      id: buyer._id.toString(),
+      username: buyer.username,
+      email: buyer.email,
+      role: "buyer",
+    };
+  } catch (err) {
+    logger.error("Get Customer fehlgeschlagen: " + err);
+    throw new Error("Get Customer failed: " + err);
+  }
+}
 export async function updateBuyer(
   buyerResource: BuyerResource
 ): Promise<BuyerResource> {

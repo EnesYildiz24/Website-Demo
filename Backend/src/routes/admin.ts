@@ -9,22 +9,33 @@ import {
 import { AdminResource } from "../Resources";
 import { body, param, validationResult } from "express-validator";
 import { logger } from "../logger";
+import {
+  optionalAuthentication,
+  requiresAuthentication,
+} from "./authenticator";
 
 const adminRouter = Router();
 const allowedRoles = ["admin", "seller", "buyer"];
 
-adminRouter.get("/", async (req: Request, res: Response) => {
-  try {
-    const admins = await getAllAdmins();
-    res.json(admins);
-  } catch (error) {
-    logger.error("Fehler beim Abrufen der Admins:", error);
-    res.status(500).json({ message: "Fehler beim Abrufen der Admins", error });
+adminRouter.get(
+  "/",
+  optionalAuthentication,
+  async (req: Request, res: Response) => {
+    try {
+      const admins = await getAllAdmins();
+      res.json(admins);
+    } catch (error) {
+      logger.error("Fehler beim Abrufen der Admins:", error);
+      res
+        .status(500)
+        .json({ message: "Fehler beim Abrufen der Admins", error });
+    }
   }
-});
+);
 
 adminRouter.get(
   "/:id",
+  optionalAuthentication,
   param("id").isMongoId().withMessage("Ungültige admin-ID"),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -38,7 +49,9 @@ adminRouter.get(
       res.json(admin);
     } catch (error) {
       logger.error("Fehler beim Abrufen eines Admins:", error);
-      res.status(404).json({ message: "Fehler beim Abrufen eines Admins", error });
+      res
+        .status(404)
+        .json({ message: "Fehler beim Abrufen eines Admins", error });
       next(error);
     }
   }
@@ -46,6 +59,7 @@ adminRouter.get(
 
 adminRouter.post(
   "/",
+  requiresAuthentication,
   [
     body("username")
       .notEmpty()
@@ -74,13 +88,16 @@ adminRouter.post(
       res.status(201).json(newAdmin);
     } catch (error) {
       logger.error("Fehler beim Erstellen eines Admins:", error);
-      res.status(500).json({ message: "Fehler beim Erstellen eines Admins", error });
+      res
+        .status(500)
+        .json({ message: "Fehler beim Erstellen eines Admins", error });
     }
   }
 );
 
 adminRouter.put(
   "/:id",
+  requiresAuthentication,
   [
     param("id").isMongoId().withMessage("Ungültige admin-ID"),
     body("username")
@@ -105,7 +122,9 @@ adminRouter.put(
       return;
     }
     if (req.body.role !== "admin") {
-      res.status(403).json({ message: "Nur Admins dürfen Admins aktualisieren" });
+      res
+        .status(403)
+        .json({ message: "Nur Admins dürfen Admins aktualisieren" });
       return;
     }
     try {
@@ -132,17 +151,25 @@ adminRouter.put(
   }
 );
 
-adminRouter.delete("/:id", async (req: Request, res: Response) => {
-  try {
-    const deletedAdmin = await deleteAdmin(req.params.id);
-    if (!deletedAdmin) {
-      res.status(404).json({ message: "Admin nicht gefunden oder bereits gelöscht" });
-      return;
+adminRouter.delete(
+  "/:id",
+  requiresAuthentication,
+  async (req: Request, res: Response) => {
+    try {
+      const deletedAdmin = await deleteAdmin(req.params.id);
+      if (!deletedAdmin) {
+        res
+          .status(404)
+          .json({ message: "Admin nicht gefunden oder bereits gelöscht" });
+        return;
+      }
+      res.status(204).send();
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Fehler beim Löschen eines Admins", error });
     }
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ message: "Fehler beim Löschen eines Admins", error });
   }
-});
+);
 
 export { adminRouter };

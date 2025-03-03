@@ -1,12 +1,11 @@
+import dotenv from "dotenv";
+dotenv.config();
 import request from "supertest";
 import express from "express";
 import { adminRouter } from "../../src/routes/admin";
 import { sign } from "jsonwebtoken";
 import cookieParser from "cookie-parser";
-import dotenv from "dotenv";
 import mongoose from "mongoose";
-
-dotenv.config();
 
 describe("Admin Routes - Full CRUD", () => {
   let app: express.Express;

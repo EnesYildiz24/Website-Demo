@@ -53,6 +53,22 @@ export async function getAllSeller(): Promise<SellerResource[]> {
   }
 }
 
+export async function getSeller(sellerId: string): Promise<SellerResource> {
+  const seller = await Seller.findById(sellerId);
+  if(!seller){
+    throw new Error(`No seller with id ${sellerId} found`);
+  }
+  return{
+    id: seller._id.toString(),
+    username: seller.username,
+    email: seller.email,
+    role: "seller",
+    shopName: seller.shopName,
+    contactInfo: seller.contactInfo,
+    rating: seller.rating
+  }
+}
+
 export async function updateSeller(
   sellerResource: SellerResource
 ): Promise<SellerResource> {
