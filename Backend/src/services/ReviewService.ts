@@ -33,6 +33,28 @@ export async function createReview(
   }
 }
 
+export async function getReview(reviewId: string): Promise<ReviewResource> {
+  if (!reviewId) {
+    throw new Error("Review id is missing, can't get it");
+  }
+  try {
+    const review = await Review.findById(reviewId);
+    if (!review) {
+      throw new Error(`Cannot find Review with id ${reviewId}`);
+    }
+    return {
+      id: review._id.toString(),
+      reviewerId: review.reviewerId.toString(),
+      productId: review.productId?.toString(),
+      sellerId: review.sellerId?.toString(),
+      createdAt: review.createdAt?.toISOString(),
+      rating: review.rating,
+      comment: review.comment,
+    };
+  } catch (err) {
+    throw new Error("Review not Found: " + err);
+  }
+}
 export async function getAllReviews(): Promise<ReviewResource[]> {
   try {
     const reviews = await Review.find({}).exec();

@@ -45,6 +45,27 @@ export async function getAllOrders(): Promise<OrderResource[]> {
   }
 }
 
+export async function getOrder(orderId: string): Promise<OrderResource> {
+  if(!orderId) {
+    throw new Error("Order id is missing, can't get it");
+  }
+  try {
+    const order = await Order.findById(orderId);
+    if (!order) {
+      throw new Error(`Cannot find Order with id ${orderId}`);
+    }
+    return {
+      id: order._id.toString(),
+      buyerId: order.buyerId.toString(),
+      productId: order.productId.toString(),
+      orderDate: order.orderDate.toISOString(),
+      status: order.status,
+      paymentInfo: order.paymentInfo,
+    };
+  } catch (err) {
+    throw new Error("Order not Found: " + err);
+  }
+}
 export async function updateOrder(
   orderResources: OrderResource
 ): Promise<OrderResource> {
