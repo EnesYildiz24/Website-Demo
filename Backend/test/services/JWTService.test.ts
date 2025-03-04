@@ -37,7 +37,7 @@ describe("JWTService", () => {
 
     const result = verifyJWT(jwt);
 
-    expect(result).toEqual({ id: "123", role: "a", exp: expect.any(Number) });
+    expect(result).toEqual({ id: "123", role: "admin", exp: expect.any(Number) });
   });
 
   test("should throw error for invalid JWT", () => {

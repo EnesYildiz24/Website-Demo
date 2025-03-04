@@ -18,24 +18,10 @@ export async function verifyPasswordAndCreateJWT(
     return undefined;
   }
 
-  let mappedRole: "a" | "s" | "b";
-  switch (loggedInUser.role) {
-    case "admin":
-      mappedRole = "a";
-      break;
-    case "seller":
-      mappedRole = "s";
-      break;
-    case "buyer":
-      mappedRole = "b";
-      break;
-    default:
-      throw new Error("Unbekannte Rolle im Login-Response");
-  }
-
+  // Verwende die Rolle direkt aus loggedInUser (lange Form)
   const payload: JwtPayload = {
     sub: loggedInUser.id,
-    role: mappedRole,
+    role: loggedInUser.role, // z.B. "admin", "seller", "buyer"
   };
 
   const jwtString = sign(payload, secret, {
@@ -62,29 +48,14 @@ export function verifyJWT(jwtString: string | undefined): LoginResource {
 
     const userId = payload.sub as string;
     const exp = payload.exp as number;
+    const role = payload.role as "admin" | "seller" | "buyer"; // direkt verwenden
 
-    // Mapping der Rollentypen aus dem JWT-Payload
-    let mappedRole: "a" | "s" | "b";
-    switch (payload.role) {
-      case "admin":
-        mappedRole = "a";
-        break;
-      case "seller":
-        mappedRole = "s";
-        break;
-      case "buyer":
-        mappedRole = "b";
-        break;
-      default:
-        throw new JsonWebTokenError("Ungültige Rolle im JWT-Payload");
-    }
-
-    if (!userId || !exp || !mappedRole) {
+    if (!userId || !exp || !role) {
       throw new JsonWebTokenError("Ungültiges JWT-Payload");
     }
     return {
       id: userId,
-      role: mappedRole,
+      role: role,
       exp: exp,
     } as LoginResource;
   } catch (err) {

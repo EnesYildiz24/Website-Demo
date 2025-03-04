@@ -26,4 +26,3 @@ abgabe*.zip
 *.pdf
 # ignore log files
 *.log
-.git/

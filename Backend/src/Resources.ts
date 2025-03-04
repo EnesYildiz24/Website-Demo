@@ -166,6 +166,6 @@ export type AdminResource = {
  */
 export type LoginResource = {
   id: string;
-  role: "a" | "s" | "b";
+  role: "admin" | "seller" | "buyer";
   exp: number;
 };
