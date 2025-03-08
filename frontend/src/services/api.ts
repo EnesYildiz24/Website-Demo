@@ -1,5 +1,5 @@
 // src/services/api.ts
-const BASE_URL = "http://localhost:5173"; 
+const BASE_URL = "http://localhost:3000";
 // Passen: dein Express läuft ggf. auf Port 3000 oder 8080 etc.
 
 interface LoginPayload {

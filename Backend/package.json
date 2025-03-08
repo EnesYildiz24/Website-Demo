@@ -5,7 +5,7 @@
   "scripts": {
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "start": "ts-node-dev --respawn src/index.ts"
+    "start": "ts-node-dev --respawn src/main.ts"
   },
   "keywords": [],
   "author": "",
