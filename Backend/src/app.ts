@@ -6,6 +6,7 @@ import { errorHandler } from "./middleware/errorhandler";
 import { productRouter } from "./routes/product";
 import { loginRouter } from "./routes/login";
 import path from "path";
+import { categoryRouter } from "./routes/category";
 
 const app = express();
 configureCORS(app);
@@ -19,6 +20,7 @@ app.get("/", (req, res) => {
 app.use("/users", userRouter);
 app.use("/product", productRouter);
 app.use("/login", loginRouter);
+app.use("/categories", categoryRouter);
 app.use(errorHandler);
 
 export default app;

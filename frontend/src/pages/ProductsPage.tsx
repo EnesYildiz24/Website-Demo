@@ -1,10 +1,7 @@
 // src/pages/ProductsPage.tsx
 import React, { useEffect, useState } from "react";
-import {
-  fetchProducts,
-  createProduct,
-  deleteProduct,
-} from "../services/api";
+import { useSearchParams } from "react-router-dom";
+import { fetchProducts, createProduct, deleteProduct } from "../services/api";
 
 interface Product {
   id?: string;
@@ -31,6 +28,10 @@ export default function ProductsPage({ userRole }: Props) {
     category: "",
   });
   const [error, setError] = useState("");
+
+  // Lese den Query-Parameter "category" aus und wandle ihn in Kleinbuchstaben um
+  const [searchParams] = useSearchParams();
+  const categoryFilter = searchParams.get("category")?.toLowerCase();
 
   async function loadProducts() {
     try {
@@ -75,45 +76,80 @@ export default function ProductsPage({ userRole }: Props) {
     }
   }
 
+  // Gruppiere die Produkte nach Kategorie (alle Kategorien in Kleinbuchstaben)
+  const groupedProducts = products.reduce((groups: { [key: string]: Product[] }, product) => {
+    const category = product.category ? product.category.toLowerCase() : "unbekannt";
+    if (!groups[category]) {
+      groups[category] = [];
+    }
+    groups[category].push(product);
+    return groups;
+  }, {} as { [key: string]: Product[] });
+
+  // Wenn ein Filter gesetzt ist, zeige nur diese Kategorie an.
+  const displayedGroups = categoryFilter
+    ? { [categoryFilter]: groupedProducts[categoryFilter] || [] }
+    : groupedProducts;
+
   return (
     <div className="container my-4">
       <h2 className="mb-4">Produkt-Übersicht</h2>
       {error && <p className="text-danger">{error}</p>}
 
-      {/* Produkt-Grid */}
-      <div className="row">
-        {products.map((p) => (
-          <div className="col-md-4 mb-4" key={p.id}>
-            <div className="card h-100">
-              {/* falls ein Bild existiert, nutze das erste Bild */}
-              {p.images && p.images.length > 0 && (
-                <img
-                  src={p.images[0]}
-                  className="card-img-top"
-                  alt={p.titel}
-                  style={{ height: "200px", objectFit: "cover" }}
-                />
-              )}
-              <div className="card-body d-flex flex-column">
-                <h5 className="card-title">{p.titel}</h5>
-                <p className="text-muted">{p.category}</p>
-                <p className="card-text flex-grow-1">{p.description}</p>
-                <p className="fw-bold">{p.price.toFixed(2)} €</p>
-                {(userRole === "admin" || userRole === "seller") && (
-                  <button
-                    className="btn btn-danger mt-auto"
-                    onClick={() => handleDeleteProduct(p.id)}
-                  >
-                    Löschen
-                  </button>
-                )}
-              </div>
+      {/* Produkte gruppiert nach Kategorie */}
+      {Object.keys(displayedGroups).length === 0 ? (
+        <p>Keine Produkte verfügbar.</p>
+      ) : (
+        Object.keys(displayedGroups).map((category) => (
+          <div key={category} className="mb-5">
+            <h3 className="mb-3">{category.charAt(0).toUpperCase() + category.slice(1)}</h3>
+            <div className="row">
+              {displayedGroups[category].map((p) => (
+                <div className="col-md-4 mb-4" key={p.id}>
+                  <div className="card h-100">
+                    {p.images && p.images.length > 0 ? (
+                      <img
+                        src={p.images[0]}
+                        className="card-img-top"
+                        alt={p.titel}
+                        style={{ height: "200px", objectFit: "cover" }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          height: "200px",
+                          backgroundColor: "#ddd",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        Kein Bild
+                      </div>
+                    )}
+                    <div className="card-body d-flex flex-column">
+                      <h5 className="card-title">{p.titel}</h5>
+                      <p className="text-muted">{p.category}</p>
+                      <p className="card-text flex-grow-1">{p.description}</p>
+                      <p className="fw-bold">{p.price.toFixed(2)} €</p>
+                      {(userRole === "admin" || userRole === "seller") && (
+                        <button
+                          className="btn btn-danger mt-auto"
+                          onClick={() => handleDeleteProduct(p.id)}
+                        >
+                          Löschen
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        ))}
-      </div>
+        ))
+      )}
 
-      {/* Nur Admins oder Seller dürfen ein neues Produkt anlegen */}
+      {/* Formular zum Anlegen eines neuen Produkts */}
       {(userRole === "admin" || userRole === "seller") && (
         <div className="border-top pt-4 mt-4">
           <h3 className="mb-3">Neues Produkt anlegen</h3>

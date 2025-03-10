@@ -106,3 +106,15 @@ export async function deleteCategory(
     description: category.description,
   };
 }
+
+export async function getCategoryByName(name: string): Promise<CategoryResource | null> {
+  const cat = await Category.findOne({ name }).exec();
+  if (!cat) {
+    return null;
+  }
+  return {
+    id: cat._id.toString(),
+    name: cat.name,
+    description: cat.description,
+  };
+}

@@ -7,31 +7,35 @@ import {
   SellerResource,
   BuyerResource,
   ProductResource,
+  CategoryResource,
 } from "./Resources";
-import { createAdmin, getAdminByEmail } from "./services/AdminService"; // Neu: findAdminByEmail
-import { createSeller, getSellerByEmail } from "./services/SellerService"; // dito
-import { createBuyer, getBuyerByEmail } from "./services/BuyerService"; // dito
+import { createAdmin, getAdminByEmail } from "./services/AdminService";
+import { createSeller, getSellerByEmail } from "./services/SellerService";
+import { createBuyer, getBuyerByEmail } from "./services/BuyerService";
 import { createProduct, getProductByTitle } from "./services/ProductService";
+// Neu: Import für Kategorien:
+import { createCategory, getCategoryByName } from "./services/CategoryService";
+
 import { Admin } from "./model/AdminModel";
 import { Seller } from "./model/SellerModel";
 import { Buyer } from "./model/BuyerModel";
 import { Product } from "./model/ProductModel";
+// Angenommen, du hast auch ein Category Model, das in createCategory verwendet wird.
 
-/**
- * Füllt die DB mit Beispielnutzern (Admin, Seller, Buyer) und ein paar Produkten.
- * So kannst du im Backend beim Start oder beim Deploy testweise Daten anlegen.
- */
 export async function prefillDB(): Promise<{
   admin: AdminResource;
   seller: SellerResource;
   buyer: BuyerResource;
   products: ProductResource[];
+  categories: CategoryResource[];
 }> {
   // 1) Indexe (optional) synchronisieren
   await Admin.syncIndexes();
   await Seller.syncIndexes();
   await Buyer.syncIndexes();
   await Product.syncIndexes();
+  // Falls dein Category Model Indexe benötigt, auch:
+  // await Category.syncIndexes();
 
   // 2) Admin erstellen, wenn er nicht existiert
   let admin = await getAdminByEmail("admin@example.com");
@@ -45,12 +49,10 @@ export async function prefillDB(): Promise<{
     });
     logger.info(`Erstellter Admin: ${admin.username}, PW=Admin123`);
   } else {
-    logger.info(
-      `Admin mit Email ${admin.email} existiert bereits. Überspringe...`
-    );
+    logger.info(`Admin mit Email ${admin.email} existiert bereits. Überspringe...`);
   }
 
-  // 3) Seller
+  // 3) Seller erstellen
   let seller = await getSellerByEmail("seller@example.com");
   if (!seller) {
     seller = await createSeller({
@@ -63,12 +65,10 @@ export async function prefillDB(): Promise<{
     });
     logger.info(`Erstellter Seller: ${seller.username}, PW=SellerPass`);
   } else {
-    logger.info(
-      `Seller mit Email ${seller.email} existiert bereits. Überspringe...`
-    );
+    logger.info(`Seller mit Email ${seller.email} existiert bereits. Überspringe...`);
   }
 
-  // 4) Buyer
+  // 4) Buyer erstellen
   let buyer = await getBuyerByEmail("buyer@example.com");
   if (!buyer) {
     buyer = await createBuyer({
@@ -79,23 +79,18 @@ export async function prefillDB(): Promise<{
     });
     logger.info(`Erstellter Buyer: ${buyer.username}, PW=BuyerPass`);
   } else {
-    logger.info(
-      `Buyer mit Email ${buyer.email} existiert bereits. Überspringe...`
-    );
+    logger.info(`Buyer mit Email ${buyer.email} existiert bereits. Überspringe...`);
   }
 
   // 5) Produkte anlegen
   const products: ProductResource[] = [];
 
-  // Beispiel: Du könntest hier auch erst checken, ob ein Produkt mit Titel X existiert.
-  // Wir gehen davon aus, dass wir immer neue Produkte anlegen oder zumindest keine Unique-Constraint auf 'titel' existiert.
-// prefillDB.ts
   const p1 = await createProduct({
     titel: "MetalGearSolid",
     description: "gay army game",
     price: 49.99,
     images: ["http://localhost:3000/static/images/Images.jpeg"],
-    category: "RPG",
+    category: "Shooter",
   });
 
   const p2 = await createProduct({
@@ -103,7 +98,7 @@ export async function prefillDB(): Promise<{
     description: "Ein Mann der sein papi tötet",
     price: 29.99,
     images: ["http://localhost:3000/static/images/godOfWar.jpeg"],
-    category: "arcade",
+    category: "Arcade",
   });
 
   const p3 = await createProduct({
@@ -122,13 +117,36 @@ export async function prefillDB(): Promise<{
     category: "Shooter",
   });
   products.push(p1, p2, p3, p4);
+  logger.info(`Produkte angelegt: ${p1.titel}, ${p2.titel}, ${p3.titel}, ${p4.titel}`);
 
-  logger.info(`Zwei Beispielprodukte angelegt: ${p1.titel}, ${p2.titel}`);
+  // 6) Kategorien anlegen
+  const categories: CategoryResource[] = [];
+  const categoryList = [
+    { name: "Horror", description: "Schockierende und spannende Horrorgeschichten." },
+    { name: "Action", description: "Schnelle, adrenalingeladene Spiele." },
+    { name: "Story", description: "Spiele mit fesselnden Handlungen und Erzählungen." },
+    { name: "Shooter", description: "Spiele, in denen Schießen und Zielgenauigkeit im Fokus stehen." },
+    { name: "Arcade", description: "Klassische Arcade-Spiele mit einfachem, süchtig machendem Gameplay." },
+  ];
+
+  for (const cat of categoryList) {
+    // Prüfe, ob die Kategorie bereits existiert
+    const existingCat = await getCategoryByName(cat.name);
+    if (!existingCat) {
+      const newCat = await createCategory(cat);
+      categories.push(newCat);
+      logger.info(`Kategorie angelegt: ${newCat.name}`);
+    } else {
+      categories.push(existingCat);
+      logger.info(`Kategorie ${existingCat.name} existiert bereits. Überspringe...`);
+    }
+  }
 
   return {
     admin,
     seller,
     buyer,
     products,
+    categories,
   };
 }
