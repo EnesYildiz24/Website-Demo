@@ -138,3 +138,19 @@ export async function deleteProduct(
     throw new Error("Delete Product failed: " + err);
   }
 }
+
+export async function getProductByTitle(titel: string): Promise<ProductResource | null> {
+  const doc = await Product.findOne({ titel }).exec();
+  if (!doc) return null;
+
+  return {
+    id: doc._id.toString(),
+    titel: doc.titel,
+    description: doc.description,
+    price: doc.price,
+    images: doc.images,
+    category: doc.category,
+    createdAt: doc.createdAt?.toISOString(),
+    updatedAt: doc.updatedAt?.toISOString(),
+  };
+}

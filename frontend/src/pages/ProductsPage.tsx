@@ -70,95 +70,139 @@ export default function ProductsPage({ userRole }: Props) {
     try {
       await deleteProduct(id);
       setProducts((prev) => prev.filter((p) => p.id !== id));
-    } catch{
+    } catch {
       setError("Produkt konnte nicht gelöscht werden");
     }
   }
 
   return (
-    <div>
-      <h2>Produkt-Übersicht</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+    <div className="container my-4">
+      <h2 className="mb-4">Produkt-Übersicht</h2>
+      {error && <p className="text-danger">{error}</p>}
 
-      <ul>
+      {/* Produkt-Grid */}
+      <div className="row">
         {products.map((p) => (
-          <li key={p.id}>
-            <strong>{p.titel}</strong> – {p.description} – {p.price}€ – ({p.category})
-            {userRole === "admin" || userRole === "seller" ? (
-              <button onClick={() => handleDeleteProduct(p.id)}>Löschen</button>
-            ) : null}
-          </li>
+          <div className="col-md-4 mb-4" key={p.id}>
+            <div className="card h-100">
+              {/* falls ein Bild existiert, nutze das erste Bild */}
+              {p.images && p.images.length > 0 && (
+                <img
+                  src={p.images[0]}
+                  className="card-img-top"
+                  alt={p.titel}
+                  style={{ height: "200px", objectFit: "cover" }}
+                />
+              )}
+              <div className="card-body d-flex flex-column">
+                <h5 className="card-title">{p.titel}</h5>
+                <p className="text-muted">{p.category}</p>
+                <p className="card-text flex-grow-1">{p.description}</p>
+                <p className="fw-bold">{p.price.toFixed(2)} €</p>
+                {(userRole === "admin" || userRole === "seller") && (
+                  <button
+                    className="btn btn-danger mt-auto"
+                    onClick={() => handleDeleteProduct(p.id)}
+                  >
+                    Löschen
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
 
-      {/* Nur Admins oder Seller dürfen ggf. neue Produkte anlegen */}
+      {/* Nur Admins oder Seller dürfen ein neues Produkt anlegen */}
       {(userRole === "admin" || userRole === "seller") && (
-        <form onSubmit={handleCreateProduct}>
-          <h3>Neues Produkt anlegen</h3>
-          <div>
-            <label>Titel: </label>
-            <input
-              type="text"
-              value={newProduct.titel}
-              onChange={(e) =>
-                setNewProduct((prev) => ({ ...prev, titel: e.target.value }))
-              }
-              required
-            />
-          </div>
-          <div>
-            <label>Beschreibung: </label>
-            <input
-              type="text"
-              value={newProduct.description}
-              onChange={(e) =>
-                setNewProduct((prev) => ({ ...prev, description: e.target.value }))
-              }
-              required
-            />
-          </div>
-          <div>
-            <label>Preis: </label>
-            <input
-              type="number"
-              value={newProduct.price}
-              step={0.01}
-              onChange={(e) =>
-                setNewProduct((prev) => ({
-                  ...prev,
-                  price: parseFloat(e.target.value),
-                }))
-              }
-              required
-            />
-          </div>
-          <div>
-            <label>Images (kommasepariert): </label>
-            <input
-              type="text"
-              onChange={(e) => {
-                const urls = e.target.value
-                  .split(",")
-                  .map((url) => url.trim())
-                  .filter(Boolean);
-                setNewProduct((prev) => ({ ...prev, images: urls }));
-              }}
-            />
-          </div>
-          <div>
-            <label>Kategorie: </label>
-            <input
-              type="text"
-              value={newProduct.category}
-              onChange={(e) =>
-                setNewProduct((prev) => ({ ...prev, category: e.target.value }))
-              }
-              required
-            />
-          </div>
+        <div className="border-top pt-4 mt-4">
+          <h3 className="mb-3">Neues Produkt anlegen</h3>
+          <form onSubmit={handleCreateProduct}>
+            <div className="mb-3">
+              <label className="form-label">Titel</label>
+              <input
+                type="text"
+                className="form-control"
+                value={newProduct.titel}
+                onChange={(e) =>
+                  setNewProduct((prev) => ({
+                    ...prev,
+                    titel: e.target.value,
+                  }))
+                }
+                required
+              />
+            </div>
 
-          <button type="submit">Erstellen</button>
-        </form>
+            <div className="mb-3">
+              <label className="form-label">Beschreibung</label>
+              <textarea
+                className="form-control"
+                rows={2}
+                value={newProduct.description}
+                onChange={(e) =>
+                  setNewProduct((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+                required
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Preis</label>
+              <input
+                type="number"
+                step="0.01"
+                className="form-control"
+                value={newProduct.price}
+                onChange={(e) =>
+                  setNewProduct((prev) => ({
+                    ...prev,
+                    price: parseFloat(e.target.value),
+                  }))
+                }
+                required
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Bilder (kommasepariert)</label>
+              <input
+                type="text"
+                className="form-control"
+                onChange={(e) => {
+                  const urls = e.target.value
+                    .split(",")
+                    .map((url) => url.trim())
+                    .filter(Boolean);
+                  setNewProduct((prev) => ({ ...prev, images: urls }));
+                }}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Kategorie</label>
+              <input
+                type="text"
+                className="form-control"
+                value={newProduct.category}
+                onChange={(e) =>
+                  setNewProduct((prev) => ({
+                    ...prev,
+                    category: e.target.value,
+                  }))
+                }
+                required
+              />
+            </div>
+
+            <button type="submit" className="btn btn-primary">
+              Erstellen
+            </button>
+          </form>
+        </div>
       )}
     </div>
   );

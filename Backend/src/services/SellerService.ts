@@ -131,3 +131,19 @@ export async function deleteSeller(sellerId: string): Promise<SellerResource> {
     throw new Error("Delete Verkäufer failed: " + err);
   }
 }
+
+
+export async function getSellerByEmail(email: string): Promise<SellerResource | null> {
+  const seller = await Seller.findOne({ email }).exec();
+  if (!seller) return null;
+
+  return {
+    id: seller._id.toString(),
+    username: seller.username,
+    email: seller.email,
+    role: "seller",
+    shopName: seller.shopName,
+    contactInfo: seller.contactInfo,
+    rating: seller.rating
+  };
+}

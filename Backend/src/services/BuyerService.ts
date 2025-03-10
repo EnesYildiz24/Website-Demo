@@ -116,3 +116,16 @@ export async function deleteBuyer(buyerId: string): Promise<BuyerResource> {
     throw new Error("Delete Customer failed: " + err);
   }
 }
+
+
+export async function getBuyerByEmail(email: string): Promise<BuyerResource | null> {
+  const buyer = await Buyer.findOne({ email }).exec();
+  if (!buyer) return null;
+
+  return {
+    id: buyer._id.toString(),
+    username: buyer.username,
+    email: buyer.email,
+    role: "buyer",
+  };
+}

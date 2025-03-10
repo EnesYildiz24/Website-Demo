@@ -76,3 +76,13 @@ export async function deleteProduct(productId: string) {
     throw new Error("Produkt konnte nicht gelöscht werden");
   }
 }
+
+export async function fetchCategories() {
+  const response = await fetch(`${BASE_URL}/categories`, {
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error("Kategorien konnten nicht geladen werden");
+  }
+  return response.json();
+}

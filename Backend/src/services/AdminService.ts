@@ -120,3 +120,17 @@ export async function deleteAdmin(adminId: string): Promise<AdminResource> {
     throw new Error("Delete Admin failed: " + err);
   }
 }
+
+export async function getAdminByEmail(email: string): Promise<AdminResource | null> {
+  const admin = await Admin.findOne({ email }).exec();
+  if (!admin) return null;
+
+  return {
+    id: admin._id.toString(),
+    username: admin.username,
+    email: admin.email,
+    password: "", 
+    role: "admin",
+    permissions: admin.permissions ?? []
+  };
+}
