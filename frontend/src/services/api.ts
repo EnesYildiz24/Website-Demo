@@ -7,6 +7,12 @@ interface LoginPayload {
   password: string;
 }
 
+interface RegistLoginPayload {
+  username: string;
+  email: string;
+  password: string;
+  role: "seller" | "buyer";
+}
 interface UserResponse {
   id: string;
   role: "admin" | "seller" | "buyer";
@@ -34,7 +40,6 @@ export async function logoutUser(): Promise<void> {
   });
 }
 
-// Beispiel: Alle Produkte abrufen
 export async function fetchProducts() {
   const response = await fetch(`${BASE_URL}/product`, {
     credentials: "include",
@@ -75,6 +80,25 @@ export async function deleteProduct(productId: string) {
   if (!response.ok) {
     throw new Error("Produkt konnte nicht gelöscht werden");
   }
+}
+
+export async function createUser(user: RegistLoginPayload) {
+  
+  const response = await fetch(`${BASE_URL}/user`, { 
+    method: "POST",
+    credentials: "include",
+    headers: { 
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(user),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Fehler beim Erstellen des Nutzers:", errorText);
+    throw new Error("Nutzer konnte nicht erstellt werden");
+  }
+  return response.json();
 }
 
 export async function fetchCategories() {

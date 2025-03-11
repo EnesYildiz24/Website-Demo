@@ -1,7 +1,8 @@
 // src/pages/ProductsPage.tsx
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { fetchProducts, createProduct, deleteProduct } from "../services/api";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 interface Product {
   id?: string;
@@ -28,6 +29,7 @@ export default function ProductsPage({ userRole }: Props) {
     category: "",
   });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // Lese den Query-Parameter "category" aus und wandle ihn in Kleinbuchstaben um
   const [searchParams] = useSearchParams();
@@ -37,6 +39,7 @@ export default function ProductsPage({ userRole }: Props) {
     try {
       const data = await fetchProducts();
       setProducts(data);
+      setLoading(false);
     } catch {
       setError("Produkte konnten nicht geladen werden");
     }
@@ -46,13 +49,15 @@ export default function ProductsPage({ userRole }: Props) {
     loadProducts();
   }, []);
 
+  if(loading) { 
+    return <LoadingIndicator />;
+  } 
   async function handleCreateProduct(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     try {
       const created = await createProduct(newProduct);
       setProducts((prev) => [...prev, created]);
-      // Formular zurücksetzen
       setNewProduct({
         titel: "",
         description: "",
@@ -76,7 +81,7 @@ export default function ProductsPage({ userRole }: Props) {
     }
   }
 
-  // Gruppiere die Produkte nach Kategorie (alle Kategorien in Kleinbuchstaben)
+  // Gruppiere die Produkte nach Kategorie (alles in Kleinbuchstaben)
   const groupedProducts = products.reduce((groups: { [key: string]: Product[] }, product) => {
     const category = product.category ? product.category.toLowerCase() : "unbekannt";
     if (!groups[category]) {
@@ -86,13 +91,25 @@ export default function ProductsPage({ userRole }: Props) {
     return groups;
   }, {} as { [key: string]: Product[] });
 
-  // Wenn ein Filter gesetzt ist, zeige nur diese Kategorie an.
+  // Falls ein Filter gesetzt ist, zeige nur diese Gruppe an.
   const displayedGroups = categoryFilter
     ? { [categoryFilter]: groupedProducts[categoryFilter] || [] }
     : groupedProducts;
 
   return (
     <div className="container my-4">
+      {/* Inline CSS für Hover-Effekt */}
+      <style>
+        {`
+          .product-card {
+            transition: transform 0.3s ease;
+          }
+          .product-card:hover {
+            transform: scale(1.05);
+          }
+        `}
+      </style>
+
       <h2 className="mb-4">Produkt-Übersicht</h2>
       {error && <p className="text-danger">{error}</p>}
 
@@ -102,45 +119,53 @@ export default function ProductsPage({ userRole }: Props) {
       ) : (
         Object.keys(displayedGroups).map((category) => (
           <div key={category} className="mb-5">
-            <h3 className="mb-3">{category.charAt(0).toUpperCase() + category.slice(1)}</h3>
+            <h3 className="mb-3">
+              {category.charAt(0).toUpperCase() + category.slice(1)}
+            </h3>
             <div className="row">
               {displayedGroups[category].map((p) => (
                 <div className="col-md-4 mb-4" key={p.id}>
-                  <div className="card h-100">
-                    {p.images && p.images.length > 0 ? (
-                      <img
-                        src={p.images[0]}
-                        className="card-img-top"
-                        alt={p.titel}
-                        style={{ height: "200px", objectFit: "cover" }}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          height: "200px",
-                          backgroundColor: "#ddd",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        Kein Bild
-                      </div>
-                    )}
-                    <div className="card-body d-flex flex-column">
-                      <h5 className="card-title">{p.titel}</h5>
-                      <p className="text-muted">{p.category}</p>
-                      <p className="card-text flex-grow-1">{p.description}</p>
-                      <p className="fw-bold">{p.price.toFixed(2)} €</p>
-                      {(userRole === "admin" || userRole === "seller") && (
-                        <button
-                          className="btn btn-danger mt-auto"
-                          onClick={() => handleDeleteProduct(p.id)}
+                  <div className="card h-100 product-card">
+                    {/* Das Bild und der obere Bereich sind als Link verpackt */}
+                    <Link
+                      to={`/product/${p.id}`}
+                      style={{ textDecoration: "none", color: "inherit" }}
+                    >
+                      {p.images && p.images.length > 0 ? (
+                        <img
+                          src={p.images[0]}
+                          className="card-img-top"
+                          alt={p.titel}
+                          style={{ height: "200px", objectFit: "cover" }}
+                        />
+                      ) : (
+                        <div
+                          style={{
+                            height: "200px",
+                            backgroundColor: "#ddd",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
                         >
-                          Löschen
-                        </button>
+                          Kein Bild
+                        </div>
                       )}
-                    </div>
+                      <div className="card-body d-flex flex-column">
+                        <h5 className="card-title">{p.titel}</h5>
+                        <p className="text-muted">{p.category}</p>
+                        <p className="card-text flex-grow-1">{p.description}</p>
+                        <p className="fw-bold">{p.price.toFixed(2)} €</p>
+                      </div>
+                    </Link>
+                    {(userRole === "admin" || userRole === "seller") && (
+                      <button
+                        className="btn btn-danger mt-2"
+                        onClick={() => handleDeleteProduct(p.id)}
+                      >
+                        Löschen
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -169,7 +194,6 @@ export default function ProductsPage({ userRole }: Props) {
                 required
               />
             </div>
-
             <div className="mb-3">
               <label className="form-label">Beschreibung</label>
               <textarea
@@ -185,7 +209,6 @@ export default function ProductsPage({ userRole }: Props) {
                 required
               />
             </div>
-
             <div className="mb-3">
               <label className="form-label">Preis</label>
               <input
@@ -202,7 +225,6 @@ export default function ProductsPage({ userRole }: Props) {
                 required
               />
             </div>
-
             <div className="mb-3">
               <label className="form-label">Bilder (kommasepariert)</label>
               <input
@@ -217,7 +239,6 @@ export default function ProductsPage({ userRole }: Props) {
                 }}
               />
             </div>
-
             <div className="mb-3">
               <label className="form-label">Kategorie</label>
               <input
@@ -233,7 +254,6 @@ export default function ProductsPage({ userRole }: Props) {
                 required
               />
             </div>
-
             <button type="submit" className="btn btn-primary">
               Erstellen
             </button>

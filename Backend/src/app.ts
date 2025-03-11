@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express, { Request, Response, NextFunction } from "express";
 import { userRouter } from "./routes/user";
 import { configureCORS } from "./configCors";
@@ -17,7 +19,7 @@ app.use("/static", express.static(path.join(__dirname, "../public")));
 app.get("/", (req, res) => {
   res.send("Hello World from TypeScript Backend + Routen!");
 });
-app.use("/users", userRouter);
+app.use("/user", userRouter);
 app.use("/product", productRouter);
 app.use("/login", loginRouter);
 app.use("/categories", categoryRouter);

@@ -60,9 +60,8 @@ userRouter.post(
       .withMessage("Das Passwort muss mindestens 6 Zeichen lang sein"),
     body("role")
       .isIn(allowedRoles)
-      .withMessage("Rolle muss admin, seller oder buyer sein"),
+      .withMessage("Rolle muss seller oder buyer sein"),
   ],
-  requiresAuthentication,
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
