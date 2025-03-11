@@ -52,7 +52,6 @@ export default function Navbar({ onLoginSuccess, userRole, setUserRole }: Navbar
       onLoginSuccess(result.role);
       setUserRole(result.role);
       setShowRegisterModal(false);
-      // Felder zurücksetzen
       setRegisterUsername("");
       setRegisterEmail("");
       setRegisterPassword("");
