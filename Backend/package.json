@@ -32,6 +32,7 @@
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.3"
   },
+"type": "commonjs",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
@@ -40,6 +41,7 @@
     "express": "^4.21.2",
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.13.0",
     "restmatcher": "^1.1.16",
     "winston": "^3.17.0"
   }

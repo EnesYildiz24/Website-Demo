@@ -1,15 +1,24 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config();
+console.log("DB_USER:", process.env.DB_USER);
+console.log("DB_PASSWORD:", process.env.DB_PASSWORD);
 import mongoose from "mongoose";
 import app from "./app";
 import { prefillDB } from "./prefill";
 
 async function main() {
   try {
-    await mongoose.connect("mongodb://localhost:27017/meinShop");
+    
+    await mongoose.connect("mongodb://localhost:27017/meineDatenbank");
     console.log("MongoDB connected.");
 
     await mongoose.connection.dropDatabase();
     console.log("DB gedroppt.");
+    if (mongoose.connection.db) {
+      console.log("✅ Verbunden mit Datenbank:", mongoose.connection.db.databaseName);
+    } else {
+      console.error("Datenbankverbindung ist nicht definiert.");
+    }
 
     await prefillDB();
     console.log("Testdaten angelegt.");

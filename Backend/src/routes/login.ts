@@ -28,7 +28,11 @@ loginRouter.post(
       email: string;
       password: string;
     };
+    console.log("📩 Eingehende Login-Daten:", email, password);
+
     const loginResult = await login(email, password);
+    console.log("🔍 Login-Ergebnis:", loginResult);
+
     if (!loginResult) {
       res.status(401).send("Login failed");
       return;
