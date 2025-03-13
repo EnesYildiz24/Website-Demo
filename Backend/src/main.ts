@@ -11,9 +11,7 @@ async function main() {
     
     await mongoose.connect("mongodb://localhost:27017/meineDatenbank");
     console.log("MongoDB connected.");
-
-    await mongoose.connection.dropDatabase();
-    console.log("DB gedroppt.");
+    
     if (mongoose.connection.db) {
       console.log("✅ Verbunden mit Datenbank:", mongoose.connection.db.databaseName);
     } else {
