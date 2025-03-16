@@ -18,7 +18,7 @@ export function configureCORS(app: express.Express) {
         var corsOptions: CorsOptions = {
             origin: process.env.CORS_ORIGIN,
             methods: "GET,PUT,POST,DELETE",
-            allowedHeaders: "Origin,Content-Type",
+            allowedHeaders: ["Content-Type", "Authorization"],
             optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
             credentials: true
         }

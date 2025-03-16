@@ -50,6 +50,8 @@ test("AuthenticationService test", () => __awaiter(void 0, void 0, void 0, funct
     expect(result).toEqual({
         id: createdUser.id,
         role: createdUser.role,
+        username: createdUser.username,
+
     });
 }));
 test("AuthenticationService test admin was false", () => __awaiter(void 0, void 0, void 0, function* () {
@@ -69,6 +71,7 @@ test("AuthenticationService test admin was false", () => __awaiter(void 0, void 
     expect(result).toEqual({
         id: createdUser.id,
         role: createdUser.role,
+        username: createdUser.username,
     });
 }));
 test("hashed password must be false", () => __awaiter(void 0, void 0, void 0, function* () {

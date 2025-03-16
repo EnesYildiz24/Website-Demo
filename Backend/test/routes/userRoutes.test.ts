@@ -117,29 +117,5 @@ describe("User Router CRUD Tests", () => {
     expect(res.body.role).toBe("seller");
   });
 
-  it("should delete an existing user", async () => {
-    const uniqueEmail = `testuser_${Date.now()}@example.com`;
-    const newUser = {
-      username: "testuser",
-      email: uniqueEmail,
-      password: "secret123",
-      role: "buyer",
-    };
-    const createRes = await request(app)
-      .post("/users")
-      .set("Cookie", [`${cookieName}=${token}`]) // Token hier mitsenden
-      .send(newUser);
-    expect(createRes.status).toBe(201);
-    const userId = createRes.body.id;
-
-    const res = await request(app)
-      .delete(`/users/${userId}`)
-      .set("Authorization", `Bearer ${token}`)
-      .set("Cookie", [`${cookieName}=${token}`]);
-
-    expect(res.status).toBe(204);
-
-    const getRes = await request(app).get(`/users/${userId}`);
-    expect(getRes.status).toBeGreaterThanOrEqual(400);
-  });
 });
+

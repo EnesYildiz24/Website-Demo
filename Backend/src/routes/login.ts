@@ -41,6 +41,8 @@ loginRouter.post(
         // Payload
         sub: loginResult.id,
         role: loginResult.role,
+        username: loginResult.username,
+
       },
       SECRET,
       {
@@ -59,6 +61,7 @@ loginRouter.post(
     res.status(201).json({
       id: loginResult.id,
       role: loginResult.role,
+      username: loginResult.username, 
     });
     return;
   }

@@ -1,19 +1,26 @@
-import React, { useState, FormEvent } from "react";
+import React, { useState, FormEvent, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { logoutUser, loginUser, createUser } from "../services/api";
+import { logoutUser, loginUser, createUser, getLogin } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 interface NavbarProps {
   onLoginSuccess: (role: "admin" | "seller" | "buyer") => void;
   userRole: "admin" | "seller" | "buyer" | null;
-  setUserRole: React.Dispatch<React.SetStateAction<"admin" | "seller" | "buyer" | null>>;
+  setUserRole: React.Dispatch<
+    React.SetStateAction<"admin" | "seller" | "buyer" | null>
+  >;
 }
-
-export default function Navbar({ onLoginSuccess, userRole, setUserRole }: NavbarProps) {
+export default function Navbar({
+  onLoginSuccess,
+  userRole,
+  setUserRole,
+}: NavbarProps) {
   // Login-State
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const { setUser } = useAuth();
 
   // Register-State
   const [showRegisterModal, setShowRegisterModal] = useState(false);
@@ -22,12 +29,32 @@ export default function Navbar({ onLoginSuccess, userRole, setUserRole }: Navbar
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerRole, setRegisterRole] = useState<"seller" | "buyer">("buyer");
   const [registerErrorMsg, setRegisterErrorMsg] = useState<string | null>(null);
+  useEffect(() => {
+    (async () => {
+      const loginStatus = await getLogin();
+      if (loginStatus) {
+        setUserRole(loginStatus.role);
+        setUser({
+          username: loginStatus.username || "",
+          role: loginStatus.role,
+          id: loginStatus.id,
+        });
+      } else {
+        setUserRole(null);
+      }
+    })();
+  }, [setUser]);
 
   async function handleLogin(e: FormEvent) {
     e.preventDefault();
     setErrorMsg(null);
     try {
       const result = await loginUser({ email, password });
+      setUser({
+        id: result.id,
+        username: result.username || "",
+        role: result.role,
+      });
       onLoginSuccess(result.role);
       setUserRole(result.role);
       setShowLoginModal(false);
@@ -49,6 +76,11 @@ export default function Navbar({ onLoginSuccess, userRole, setUserRole }: Navbar
         password: registerPassword,
         role: registerRole,
       });
+      setUser({
+        username: registerUsername,
+        role: result.role,
+        id: result.id,
+      });
       onLoginSuccess(result.role);
       setUserRole(result.role);
       setShowRegisterModal(false);
@@ -56,7 +88,9 @@ export default function Navbar({ onLoginSuccess, userRole, setUserRole }: Navbar
       setRegisterEmail("");
       setRegisterPassword("");
     } catch (error) {
-      setRegisterErrorMsg("Registrierung fehlgeschlagen: " + (error as Error).message);
+      setRegisterErrorMsg(
+        "Registrierung fehlgeschlagen: " + (error as Error).message
+      );
     }
   }
 
@@ -64,6 +98,7 @@ export default function Navbar({ onLoginSuccess, userRole, setUserRole }: Navbar
     try {
       await logoutUser();
       setUserRole(null);
+      setUser(null);
     } catch (error) {
       console.error("Logout fehlgeschlagen", error);
     }
@@ -304,7 +339,7 @@ export default function Navbar({ onLoginSuccess, userRole, setUserRole }: Navbar
                         className="form-control"
                         value={registerRole}
                         onChange={(e) =>
-                          setRegisterRole(e.target.value as  "seller" | "buyer")
+                          setRegisterRole(e.target.value as "seller" | "buyer")
                         }
                         required
                       >

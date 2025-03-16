@@ -11,7 +11,7 @@ import { User } from "../model/UserModel";
 export async function login(
   email: string,
   password: string
-): Promise<{ id: string; role: "admin" | "seller" | "buyer" } | false> {
+): Promise<{ id: string; role: "admin" | "seller" | "buyer"; username: string } | false> {
   if (!email || !password) {
     console.log("⚠️ Kein Email oder Passwort angegeben");
     logger.warn("Kein Email oder Passwort angegeben");
@@ -39,5 +39,5 @@ export async function login(
   const role: "admin" | "seller" | "buyer" = user.role;
   console.log("✅ Login erfolgreich für:", email, "mit Rolle:", role);
 
-  return { id: user._id.toString(), role };
+  return { id: user._id.toString(), role, username: user.username };
 }

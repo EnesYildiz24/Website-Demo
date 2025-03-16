@@ -30,8 +30,18 @@ describe("Login Router", () => {
   describe("POST /login", () => {
     it("should login successfully and set a cookie", async () => {
       // Mocken eines erfolgreichen Logins
-      const mockLoginResult = { id: "507f1f77bcf86cd799439011", role: "admin" };
-      (login as jest.MockedFunction<typeof login>).mockResolvedValue(mockLoginResult as LoginResource);
+      const mockLoginResult: {
+        id: string;
+        role: "admin" | "seller" | "buyer";
+        username: string;
+      } = {
+        id: "507f1f77bcf86cd799439011",
+        role: "admin",
+        username: "adminUser",
+      };
+      (login as jest.MockedFunction<typeof login>).mockResolvedValue(
+        mockLoginResult as LoginResource
+      );
 
       const jwtSecret = process.env.JWT_SECRET || "defaultSecret";
       const TTL = parseInt(process.env.JWT_TTL || "300");
@@ -41,7 +51,11 @@ describe("Login Router", () => {
         .send({ email: "test@example.com", password: "password123" });
 
       expect(response.status).toBe(201);
-      expect(response.body).toEqual({ id: mockLoginResult.id, role: mockLoginResult.role });
+      expect(response.body).toEqual({
+        id: mockLoginResult.id,
+        role: mockLoginResult.role,
+        username: mockLoginResult.username,
+      });
       // Überprüfen, ob der Cookie gesetzt wurde
       const cookies = response.headers["set-cookie"];
       expect(cookies).toBeDefined();
@@ -49,7 +63,11 @@ describe("Login Router", () => {
     });
 
     it("should fail login with invalid credentials", async () => {
-      (login as jest.MockedFunction<() => Promise<LoginResource | undefined>>).mockResolvedValue(undefined);
+      (
+        login as unknown as jest.MockedFunction<
+          () => Promise<LoginResource | undefined>
+        >
+      ).mockResolvedValue(undefined);
       const response = await request(app)
         .post("/login")
         .send({ email: "wrong@example.com", password: "wrongpassword" });
@@ -77,8 +95,16 @@ describe("Login Router", () => {
       const jwtSecret = process.env.JWT_SECRET || "defaultSecret";
       const TTL = parseInt(process.env.JWT_TTL || "300");
       // Erzeuge einen gültigen Token
-      const token = sign({ sub: "507f1f77bcf86cd799439011", role: "admin" }, jwtSecret, { expiresIn: TTL });
-      const mockPayload = { sub: "507f1f77bcf86cd799439011", role: "admin", exp: Math.floor(Date.now() / 1000) + TTL };
+      const token = sign(
+        { sub: "507f1f77bcf86cd799439011", role: "admin" },
+        jwtSecret,
+        { expiresIn: TTL }
+      );
+      const mockPayload = {
+        sub: "507f1f77bcf86cd799439011",
+        role: "admin",
+        exp: Math.floor(Date.now() / 1000) + TTL,
+      };
       (verifyJWT as jest.Mock).mockReturnValue(mockPayload);
 
       const response = await request(app)
@@ -103,8 +129,7 @@ describe("Login Router", () => {
 
   describe("DELETE /login", () => {
     it("should clear the cookie and return 200", async () => {
-      const response = await request(app)
-        .delete("/login");
+      const response = await request(app).delete("/login");
       expect(response.status).toBe(200);
     });
   });

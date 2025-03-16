@@ -1,21 +1,25 @@
-import { Schema, model, Model } from "mongoose";
+import { Schema, model, Model, Document, Types } from "mongoose";
 
 export interface IReview {
-  reviewerId: Schema.Types.ObjectId;
   productId?: Schema.Types.ObjectId;
-  sellerId?: Schema.Types.ObjectId;
+  reviewerId?: Schema.Types.ObjectId;
+  reviewerName: string;
   rating: number;
   comment: string;
   createdAt?: Date;
 }
 
-export type ReviewModel = Model<IReview>;
+export interface ReviewDocument extends IReview, Document {
+  _id: Types.ObjectId; 
+}
 
-const reviewSchema = new Schema<IReview>(
+export type ReviewModel = Model<ReviewDocument>;
+
+const reviewSchema = new Schema<ReviewDocument>(
   {
-    reviewerId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     productId: { type: Schema.Types.ObjectId, ref: "Product" },
-    sellerId: { type: Schema.Types.ObjectId, ref: "User" },
+    reviewerId: { type: Schema.Types.ObjectId, ref: "User" },
+    reviewerName: { type: String, required: true }, 
     rating: { type: Number, required: true },
     comment: { type: String, required: true },
   },
@@ -24,4 +28,4 @@ const reviewSchema = new Schema<IReview>(
   }
 );
 
-export const Review = model<IReview, ReviewModel>("Review", reviewSchema);
+export const Review = model<ReviewDocument, ReviewModel>("Review", reviewSchema);

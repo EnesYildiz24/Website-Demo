@@ -43,6 +43,7 @@ test("AuthenticationService test", async () => {
   expect(result).toEqual({
     id: createdUser.id,
     role: createdUser.role,
+    username: createdUser.username,
   });
 });
 
@@ -64,6 +65,7 @@ test("AuthenticationService test admin was false", async () => {
   expect(result).toEqual({
     id: createdUser.id,
     role: createdUser.role,
+    username: createdUser.username,
   });
 });
 

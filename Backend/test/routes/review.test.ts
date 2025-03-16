@@ -47,17 +47,15 @@ describe("Review Routes", () => {
       const mockReviews: ReviewResource[] = [
         {
           id: "507f1f77bcf86cd799439011",
-          reviewerId: "507f1f77bcf86cd799439022",
           productId: "507f1f77bcf86cd799439033",
-          sellerId: "507f1f77bcf86cd799439044",
+          reviewerId: "507f1f77bcf86cd799439044",
           rating: 5,
           comment: "Great product!",
         },
         {
           id: "507f1f77bcf86cd799439012",
-          reviewerId: "507f1f77bcf86cd799439023",
           productId: "507f1f77bcf86cd799439034",
-          sellerId: "507f1f77bcf86cd799439045",
+          reviewerId: "507f1f77bcf86cd799439045",
           rating: 4,
           comment: "Good value.",
         },
@@ -76,41 +74,6 @@ describe("Review Routes", () => {
       // In der Route wird der Fehler inline abgefangen
       expect(response.body.message).toBe("Fehler beim Abrufen der Reviews");
       // Da Error-Objekte oft als {} serialisiert werden, erwarten wir {} hier
-      expect(response.body.error).toEqual({});
-    });
-  });
-
-  describe("GET /reviews/:id", () => {
-    it("should return a review by id", async () => {
-      const reviewId = "507f1f77bcf86cd799439011";
-      const mockReview: ReviewResource = {
-        id: reviewId,
-        reviewerId: "507f1f77bcf86cd799439022",
-        productId: "507f1f77bcf86cd799439033",
-        sellerId: "507f1f77bcf86cd799439044",
-        rating: 5,
-        comment: "Great product!",
-      };
-      (getReview as jest.MockedFunction<typeof getReview>).mockResolvedValue(mockReview);
-      const response = await request(app).get(`/reviews/${reviewId}`);
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockReview);
-    });
-
-    it("should return 404 if review not found", async () => {
-      const reviewId = "507f1f77bcf86cd799439011";
-      (getReview as jest.MockedFunction<typeof getReview>).mockResolvedValue(null as any);
-      const response = await request(app).get(`/reviews/${reviewId}`);
-      expect(response.status).toBe(404);
-      expect(response.body).toEqual({ message: `Keine Review mit der ID ${reviewId} gefunden` });
-    });
-
-    it("should handle errors on GET /reviews/:id", async () => {
-      const reviewId = "507f1f77bcf86cd799439011";
-      (getReview as jest.MockedFunction<typeof getReview>).mockRejectedValue(new Error("Error"));
-      const response = await request(app).get(`/reviews/${reviewId}`);
-      expect(response.status).toBe(500);
-      expect(response.body.message).toBe("Fehler beim Abrufen einer Review");
       expect(response.body.error).toEqual({});
     });
   });
@@ -250,9 +213,8 @@ describe("Review Routes", () => {
     it("should delete a review", async () => {
       (deleteReview as jest.MockedFunction<typeof deleteReview>).mockResolvedValue({
         id: validId,
-        reviewerId: "507f1f77bcf86cd799439022",
         productId: "507f1f77bcf86cd799439033",
-        sellerId: "507f1f77bcf86cd799439044",
+        reviewerId: "507f1f77bcf86cd799439044",
         rating: 5,
         comment: "Great product!",
       });

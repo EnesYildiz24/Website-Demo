@@ -1,28 +1,27 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { logger } from "../logger";
-import { Review } from "../model/ReviewModel";
+import { Review, ReviewDocument } from "../model/ReviewModel";
 import { ReviewResource } from "../Resources";
 
 export async function createReview(
-  reviewResources: ReviewResource
+  reviewResources: ReviewResource,
+  user: { _id: string; username: string }
 ): Promise<ReviewResource> {
   try {
     const review = await Review.create({
-      reviewerId: new mongoose.Types.ObjectId(reviewResources.reviewerId),
       productId: reviewResources.productId
         ? new mongoose.Types.ObjectId(reviewResources.productId)
         : undefined,
-      sellerId: reviewResources.sellerId
-        ? new mongoose.Types.ObjectId(reviewResources.sellerId)
-        : undefined,
-      rating: reviewResources.rating,
+        reviewerId: new mongoose.Types.ObjectId(user._id),
+        reviewerName: user.username || "Unbekannter Nutzer",
+        rating: reviewResources.rating,
       comment: reviewResources.comment,
     });
     return {
       id: review?._id.toString(),
-      reviewerId: reviewResources.reviewerId.toString(),
       productId: reviewResources.productId?.toString(),
-      sellerId: reviewResources.sellerId?.toString(),
+      reviewerId: reviewResources.reviewerId?.toString(),
+      reviewerName: user.username,
       createdAt: review.createdAt?.toISOString(),
       rating: reviewResources.rating,
       comment: reviewResources.comment,
@@ -38,15 +37,14 @@ export async function getReview(reviewId: string): Promise<ReviewResource> {
     throw new Error("Review id is missing, can't get it");
   }
   try {
-    const review = await Review.findById(reviewId);
+    const review = await Review.findById(reviewId).populate("reviewerId", "username");
     if (!review) {
       throw new Error(`Cannot find Review with id ${reviewId}`);
     }
     return {
       id: review._id.toString(),
-      reviewerId: review.reviewerId.toString(),
       productId: review.productId?.toString(),
-      sellerId: review.sellerId?.toString(),
+      reviewerId: review.reviewerId?.toString(),
       createdAt: review.createdAt?.toISOString(),
       rating: review.rating,
       comment: review.comment,
@@ -60,9 +58,8 @@ export async function getAllReviews(): Promise<ReviewResource[]> {
     const reviews = await Review.find({}).exec();
     const reviewResources = reviews.map((review) => ({
       id: review._id.toString(),
-      reviewerId: review.reviewerId.toString(),
       productId: review.productId?.toString(),
-      sellerId: review.sellerId?.toString(),
+      sellerId: review.reviewerId?.toString(),
       createdAt: review.createdAt!.toISOString(),
       rating: review.rating,
       comment: review.comment,
@@ -83,9 +80,8 @@ export async function updateReview(
     const review = await Review.findOneAndUpdate(
       { _id: reviewResources.id },
       {
-        reviewerId: reviewResources.reviewerId,
         productId: reviewResources.productId,
-        sellerId: reviewResources.sellerId,
+        sellerId: reviewResources.reviewerId,
         rating: reviewResources.rating,
         comment: reviewResources.comment,
       },
@@ -96,9 +92,8 @@ export async function updateReview(
     }
     return {
       id: review._id.toString(),
-      reviewerId: review.reviewerId.toString(),
       productId: review.productId?.toString(),
-      sellerId: review.sellerId?.toString(),
+      reviewerId: review.reviewerId?.toString(),
       rating: review.rating,
       comment: review.comment,
       createdAt: review.createdAt?.toISOString(),
@@ -121,11 +116,41 @@ export async function deleteReview(reviewId: string): Promise<ReviewResource> {
 
   return {
     id: review._id.toString(),
-    reviewerId: review.reviewerId.toString(),
     productId: review.productId?.toString(),
-    sellerId: review.sellerId?.toString(),
+    reviewerId: review.reviewerId?.toString(),
     createdAt: review.createdAt!.toISOString(),
     rating: review.rating,
     comment: review.comment,
   };
 }
+
+export async function getReviewsByProductId(
+  productId: string
+): Promise<ReviewResource[]> {
+  try {
+    // Populiert das Feld reviewerId mit dem Benutzernamen
+    const reviews = await Review.find({ productId }).populate("reviewerId", "username");
+    const reviewResources = reviews.map((review) => ({
+      id: review._id.toString(),
+      productId: review.productId?.toString(),
+      reviewerId: review.reviewerId && review.reviewerId instanceof Types.ObjectId
+      ? review.reviewerId.toString()
+      : (review.reviewerId as any)?._id?.toString() ?? "",
+      reviewerName: review.reviewerName,
+      createdAt: review.createdAt!.toISOString(),
+      rating: review.rating,
+      comment: review.comment,
+    }));
+     return reviewResources
+    ;
+  } catch (error) {
+    logger.error(
+      "Fehler beim Abrufen der Reviews für ein bestimmtes Produkt:",
+      error
+    );
+    throw new Error(
+      "Fehler beim Abrufen der Reviews für ein bestimmtes Produkt"
+    );
+  }
+}
+

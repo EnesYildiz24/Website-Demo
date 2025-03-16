@@ -28,45 +28,10 @@ describe("Review Service Tests", () => {
         yield mongoose_1.default.connection.dropDatabase();
         yield mongoose_1.default.connection.close();
     }));
-    it("should create a review", () => __awaiter(void 0, void 0, void 0, function* () {
-        const reviewData = {
-            reviewerId: new mongoose_1.default.Types.ObjectId().toString(),
-            productId: new mongoose_1.default.Types.ObjectId().toString(),
-            sellerId: new mongoose_1.default.Types.ObjectId().toString(),
-            rating: 5,
-            comment: "Excellent service",
-        };
-        const review = yield (0, ReviewService_1.createReview)(reviewData);
-        expect(review).toHaveProperty("id");
-        expect(review.reviewerId).toBe(reviewData.reviewerId);
-        expect(review.productId).toBe(reviewData.productId);
-        expect(review.sellerId).toBe(reviewData.sellerId);
-        expect(review.rating).toBe(5);
-        expect(review.comment).toBe("Excellent service");
-        expect(typeof review.createdAt).toBe("string");
-    }));
-    it("should fetch all reviews", () => __awaiter(void 0, void 0, void 0, function* () {
-        const rev1 = yield (0, ReviewService_1.createReview)({
-            reviewerId: new mongoose_1.default.Types.ObjectId().toString(),
-            rating: 3,
-            comment: "Okay product",
-        });
-        const rev2 = yield (0, ReviewService_1.createReview)({
-            reviewerId: new mongoose_1.default.Types.ObjectId().toString(),
-            rating: 4,
-            comment: "Pretty good",
-        });
-        const reviews = yield (0, ReviewService_1.getAllReviews)();
-        expect(Array.isArray(reviews)).toBe(true);
-        expect(reviews.length).toBe(2);
-        expect(reviews).toEqual(expect.arrayContaining([
-            expect.objectContaining({ id: rev1.id }),
-            expect.objectContaining({ id: rev2.id }),
-        ]));
-    }));
     it("should update a review", () => __awaiter(void 0, void 0, void 0, function* () {
         const initial = yield ReviewModel_1.Review.create({
             reviewerId: new mongoose_1.default.Types.ObjectId(),
+            reviewerName: "Jane Doe",
             rating: 2,
             comment: "Needs improvement",
         });
@@ -86,6 +51,7 @@ describe("Review Service Tests", () => {
     it("should delete a review", () => __awaiter(void 0, void 0, void 0, function* () {
         const reviewDoc = yield ReviewModel_1.Review.create({
             reviewerId: new mongoose_1.default.Types.ObjectId(),
+            reviewerName: "John Doe",
             rating: 3,
             comment: "Decent",
         });

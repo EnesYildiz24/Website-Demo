@@ -38,6 +38,14 @@ describe("Product Service Tests", () => {
   });
 
   it("should fetch all products", async () => {
+    await Product.create({
+      titel: "Sample Product",
+      description: "Sample description",
+      price: 10,
+      images: ["sample.jpg"],
+      category: "Sample Category",
+    });
+
     const products = await getAllProduct();
     expect(Array.isArray(products)).toBe(true);
     expect(products.length).toBeGreaterThanOrEqual(1);

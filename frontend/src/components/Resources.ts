@@ -61,7 +61,7 @@ export type SellerResource = {
 /**
  * ProductResource
  *
- * Dient zur Darstellung eines Produkts (z. B. eines Spiels) in der API.
+ * Dient zur Darstellung eines Produkts (z.B. eines Spiels) in der API.
  * - id: Optional, da bei der Erstellung noch nicht vorhanden.
  * - titel: Der Titel des Produkts.
  * - description: Eine Beschreibung des Produkts.
@@ -109,24 +109,23 @@ export type OrderResource = {
  * - reviewerId: Die ID des Rezensenten (User).
  * - productId: Optional, falls die Bewertung für ein Produkt gilt.
  * - sellerId: Optional, falls die Bewertung für einen Verkäufer gilt.
- * - rating: Die Bewertung (z. B. 1-5 Sterne).
+ * - rating: Die Bewertung (z.B. 1-5 Sterne).
  * - comment: Der Bewertungstext.
  * - createdAt: Wird von MongoDB automatisch gesetzt.
  */
 export type ReviewResource = {
   id?: string;
   productId?: string;
-  reviewerId?: string;
+  sellerId?: string;
   rating: number;
   comment: string;
   createdAt?: string;
-  reviewerName?: string;
 };
 
 /**
  * CategoryResource
  *
- * Dient zur Strukturierung von Produkten (z. B. als Genre oder Kategorie).
+ * Dient zur Strukturierung von Produkten (z.B. als Genre oder Kategorie).
  * - id: Optional, da bei der Erstellung noch nicht vorhanden.
  * - name: Der Name der Kategorie.
  * - description: Eine Beschreibung der Kategorie.
@@ -165,9 +164,8 @@ export type AdminResource = {
  * - exp: Das Ablaufdatum (Expiration) als Sekunden seit dem 1.1.1970.
  */
 export type LoginResource = {
-  id: string;
+  id: string;  
+  username?: string; 
   role: "admin" | "seller" | "buyer";
   exp: number;
-  username: string;
-
 };

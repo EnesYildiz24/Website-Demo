@@ -16,8 +16,9 @@ declare global {
        */
       userId?: string;
       role?: "admin" | "seller" | "buyer" | "guest";
-    }
+    user?: { _id: string; username: string };
   }
+}
 }
 
 /**
@@ -50,7 +51,9 @@ export function requiresAuthentication(
         res.status(403).send("Forbidden Role");
         return;
       }
-      req.role = payload.role || "guest";
+      (req as any).user = { _id: payload.sub, username: (payload as any).username };
+      req.user = { _id: payload.sub, username: (payload as any).username };
+
       next();
       return;
     }
