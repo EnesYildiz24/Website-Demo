@@ -13,7 +13,6 @@ import { createAdmin, getAdminByEmail } from "./services/AdminService";
 import { createSeller, getSellerByEmail } from "./services/SellerService";
 import { createBuyer, getBuyerByEmail } from "./services/BuyerService";
 import { createProduct, getProductByTitle } from "./services/ProductService";
-// Neu: Import für Kategorien:
 import { createCategory, getCategoryByName } from "./services/CategoryService";
 
 import { Admin } from "./model/AdminModel";
@@ -29,7 +28,7 @@ export async function prefillDB(): Promise<{
   products: ProductResource[];
   categories: CategoryResource[];
 }> {
-  // 1) Indexe (optional) synchronisieren
+  // 1) Indexe synchronisieren (optional)
   await Admin.syncIndexes();
   await Seller.syncIndexes();
   await Buyer.syncIndexes();
@@ -52,7 +51,7 @@ export async function prefillDB(): Promise<{
     logger.info(`Admin mit Email ${admin.email} existiert bereits. Überspringe...`);
   }
 
-  // 3) Seller erstellen
+  // 3) Seller erstellen, wenn nicht vorhanden
   let seller = await getSellerByEmail("seller@example.com");
   if (!seller) {
     seller = await createSeller({
@@ -68,7 +67,7 @@ export async function prefillDB(): Promise<{
     logger.info(`Seller mit Email ${seller.email} existiert bereits. Überspringe...`);
   }
 
-  // 4) Buyer erstellen
+  // 4) Buyer erstellen, wenn nicht vorhanden
   let buyer = await getBuyerByEmail("buyer@example.com");
   if (!buyer) {
     buyer = await createBuyer({
@@ -82,44 +81,70 @@ export async function prefillDB(): Promise<{
     logger.info(`Buyer mit Email ${buyer.email} existiert bereits. Überspringe...`);
   }
 
-  // 5) Produkte anlegen
+  // 5) Produkte anlegen – selektives Pre-Filling anhand des Titels
   const products: ProductResource[] = [];
 
-  const p1 = await createProduct({
-    titel: "MetalGearSolid",
-    description: "gay army game",
-    price: 49.99,
-    images: ["http://localhost:3000/static/images/Images.jpeg"],
-    category: "Shooter",
-  });
+  let p1 = await getProductByTitle("MetalGearSolid");
+  if (!p1) {
+    p1 = await createProduct({
+      titel: "MetalGearSolid",
+      description: "gay army game",
+      price: 49.99,
+      images: ["http://localhost:3000/static/images/Images.jpeg"],
+      category: "Shooter",
+    });
+    logger.info(`Produkt angelegt: ${p1.titel}`);
+  } else {
+    logger.info(`Produkt ${p1.titel} existiert bereits. Überspringe...`);
+  }
+  products.push(p1);
 
-  const p2 = await createProduct({
-    titel: "God of war 2",
-    description: "Ein Mann der sein papi tötet",
-    price: 29.99,
-    images: ["http://localhost:3000/static/images/godOfWar.jpeg"],
-    category: "Arcade",
-  });
+  let p2 = await getProductByTitle("God of war 2");
+  if (!p2) {
+    p2 = await createProduct({
+      titel: "God of war 2",
+      description: "Ein Mann der sein papi tötet",
+      price: 29.99,
+      images: ["http://localhost:3000/static/images/godOfWar.jpeg"],
+      category: "Arcade",
+    });
+    logger.info(`Produkt angelegt: ${p2.titel}`);
+  } else {
+    logger.info(`Produkt ${p2.titel} existiert bereits. Überspringe...`);
+  }
+  products.push(p2);
 
-  const p3 = await createProduct({
-    titel: "Crysis",
-    description: "Alien game",
-    price: 59.99,
-    images: ["http://localhost:3000/static/images/Unknown.jpeg"],
-    category: "Shooter",
-  });
+  let p3 = await getProductByTitle("Crysis");
+  if (!p3) {
+    p3 = await createProduct({
+      titel: "Crysis",
+      description: "Alien game",
+      price: 59.99,
+      images: ["http://localhost:3000/static/images/Unknown.jpeg"],
+      category: "Shooter",
+    });
+    logger.info(`Produkt angelegt: ${p3.titel}`);
+  } else {
+    logger.info(`Produkt ${p3.titel} existiert bereits. Überspringe...`);
+  }
+  products.push(p3);
 
-  const p4 = await createProduct({
-    titel: "DOOD",
-    description: "D D D D DOOM",
-    price: 19.99,
-    images: ["http://localhost:3000/static/images/bild.jpeg"],
-    category: "Shooter",
-  });
-  products.push(p1, p2, p3, p4);
-  logger.info(`Produkte angelegt: ${p1.titel}, ${p2.titel}, ${p3.titel}, ${p4.titel}`);
+  let p4 = await getProductByTitle("DOOD");
+  if (!p4) {
+    p4 = await createProduct({
+      titel: "DOOD",
+      description: "D D D D DOOM",
+      price: 19.99,
+      images: ["http://localhost:3000/static/images/bild.jpeg"],
+      category: "Shooter",
+    });
+    logger.info(`Produkt angelegt: ${p4.titel}`);
+  } else {
+    logger.info(`Produkt ${p4.titel} existiert bereits. Überspringe...`);
+  }
+  products.push(p4);
 
-  // 6) Kategorien anlegen
+  // 6) Kategorien anlegen – nur, wenn sie noch nicht existieren
   const categories: CategoryResource[] = [];
   const categoryList = [
     { name: "Horror", description: "Schockierende und spannende Horrorgeschichten." },
@@ -130,7 +155,6 @@ export async function prefillDB(): Promise<{
   ];
 
   for (const cat of categoryList) {
-    // Prüfe, ob die Kategorie bereits existiert
     const existingCat = await getCategoryByName(cat.name);
     if (!existingCat) {
       const newCat = await createCategory(cat);
