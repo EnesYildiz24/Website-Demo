@@ -10,9 +10,14 @@ import { UserResource } from "../Resources";
 import { body, param, validationResult } from "express-validator";
 import { logger } from "../logger";
 import { optionalAuthentication, requiresAuthentication } from "./authenticator";
+import { sign } from "jsonwebtoken";
 
 const userRouter = Router();
 const allowedRoles = ["admin", "seller", "buyer"];
+
+const COOKIE_NAME = "access_token";
+const SECRET = process.env.JWT_SECRET!;
+const TTL = parseInt(process.env.JWT_TTL!);
 
 userRouter.get("/", optionalAuthentication, async (req: Request, res: Response): Promise<void> => {
   try {
@@ -60,7 +65,7 @@ userRouter.post(
       .withMessage("Das Passwort muss mindestens 6 Zeichen lang sein"),
     body("role")
       .isIn(allowedRoles)
-      .withMessage("Rolle muss seller oder buyer sein"),
+      .withMessage("Rolle muss admin, seller oder buyer sein"),
   ],
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -69,13 +74,32 @@ userRouter.post(
       return;
     }
     try {
-      const newUser = await createUser(req.body);
+      const newUser: UserResource = await createUser(req.body);
+
+      // JWT-Token generieren
+      const token = sign(
+        {
+          sub: newUser.id,
+          role: newUser.role,
+          username: newUser.username,
+        },
+        SECRET,
+        { expiresIn: TTL, algorithm: "HS256" }
+      );
+      
+
+      // Cookie setzen
+      res.cookie(COOKIE_NAME, token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // in der Entwicklung false
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        expires: new Date(Date.now() + TTL * 1000),
+      });
+
       res.status(201).json(newUser);
     } catch (error) {
       logger.error("Fehler beim Erstellen eines Users:", error);
-      res
-        .status(500)
-        .json({ message: "Fehler beim Erstellen eines Users", error });
+      res.status(500).json({ message: "Fehler beim Erstellen eines Users", error });
     }
   }
 );

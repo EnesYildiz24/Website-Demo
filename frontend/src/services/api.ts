@@ -104,7 +104,6 @@ export async function createUser(user: RegistLoginPayload) {
   }
   return response.json();
 }
-
 export async function fetchCategories() {
   const response = await fetchWithErrorHandling(`${BASE_URL}/categories`, {
     credentials: "include",
@@ -202,3 +201,4 @@ export async function deleteReview(reviewId: string) {
   const text = await response.text();
   return text ? JSON.parse(text) : {};
 }
+

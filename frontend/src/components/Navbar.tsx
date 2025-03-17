@@ -15,14 +15,12 @@ export default function Navbar({
   userRole,
   setUserRole,
 }: NavbarProps) {
-  // Login-State
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const { setUser } = useAuth();
 
-  // Register-State
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [registerUsername, setRegisterUsername] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
@@ -58,7 +56,6 @@ export default function Navbar({
       onLoginSuccess(result.role);
       setUserRole(result.role);
       setShowLoginModal(false);
-      // Felder zurücksetzen
       setEmail("");
       setPassword("");
     } catch (error) {
@@ -140,7 +137,6 @@ export default function Navbar({
               </li>
             </ul>
             <div className="d-flex">
-              {/* User Icon Dropdown */}
               <div className="dropdown">
                 <button
                   className="btn btn-link dropdown-toggle"
@@ -203,8 +199,6 @@ export default function Navbar({
           </div>
         </div>
       </nav>
-
-      {/* Modal-Login */}
       {showLoginModal && (
         <>
           <div
@@ -261,12 +255,9 @@ export default function Navbar({
               </div>
             </div>
           </div>
-          {/* Modal Backdrop */}
           <div className="modal-backdrop fade show"></div>
         </>
       )}
-
-      {/* Modal-Register */}
       {showRegisterModal && (
         <>
           <div
