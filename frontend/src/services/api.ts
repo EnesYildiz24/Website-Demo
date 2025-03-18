@@ -202,3 +202,59 @@ export async function deleteReview(reviewId: string) {
   return text ? JSON.parse(text) : {};
 }
 
+export async function getCart() {
+  const response = await fetchWithErrorHandling(`${BASE_URL}/cart`, {
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Fehler beim Laden des Warenkorbs");
+  }
+
+  return response.json();
+}
+
+export async function addToCart(productId: string, quantity: number = 1) {
+  const response = await fetchWithErrorHandling(`${BASE_URL}/cart/add`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ productId, quantity }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Fehler beim Hinzufügen zum Warenkorb");
+  }
+
+  return response.json();
+}
+
+export async function removeFromCart(productId: string) {
+  const response = await fetchWithErrorHandling(
+    `${BASE_URL}/cart/remove/${productId}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Fehler beim Entfernen aus dem Warenkorb");
+  }
+
+  return response.json();
+}
+export async function clearCart() {
+  const response = await fetchWithErrorHandling(`${BASE_URL}/cart/clear`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Fehler beim Leeren des Warenkorbs");
+  }
+
+  return response.json();
+}

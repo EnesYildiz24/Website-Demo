@@ -6,6 +6,7 @@ import {
   fetchReviews,
   submitReview,
   deleteReview,
+  addToCart,
 } from "../services/api";
 import LoadingIndicator from "../components/LoadingIndicator";
 import { useAuth } from "../context/AuthContext";
@@ -56,7 +57,6 @@ function StarRating({ rating, onRatingChange }: StarRatingProps) {
   );
 }
 
-// Styles für das modale Fenster
 const modalOverlayStyle: React.CSSProperties = {
   position: "fixed",
   top: 0,
@@ -97,6 +97,20 @@ export default function ProductDetailPage() {
   // State für modales Bestätigungsfenster
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [reviewIdToDelete, setReviewIdToDelete] = useState<string | null>(null);
+
+  async function handleAddToCart() {
+    if (!product || !product.id) {
+      alert("Produkt nicht gefunden.");
+      return;
+    }
+    try {
+      await addToCart(product.id, 1);
+      alert("Produkt wurde zum Warenkorb hinzugefügt!");
+    } catch (error) {
+      console.error("Fehler beim Hinzufügen:", error);
+      alert("Fehler beim Hinzufügen zum Warenkorb");
+    }
+  }
 
   useEffect(() => {
     async function loadProduct() {
@@ -167,7 +181,8 @@ export default function ProductDetailPage() {
       await deleteReview(reviewIdToDelete);
       setReviews((prev) =>
         prev.filter(
-          (review) => review.id !== reviewIdToDelete && review._id !== reviewIdToDelete
+          (review) =>
+            review.id !== reviewIdToDelete && review._id !== reviewIdToDelete
         )
       );
     } catch (err) {
@@ -237,13 +252,19 @@ export default function ProductDetailPage() {
           <p className="fw-bold">Preis: {product.price.toFixed(2)} €</p>
           <p className="text-muted">Kategorie: {product.category}</p>
           <h4>⭐ Durchschnittliche Bewertung: {averageRating}</h4>
+          <button className="btn btn-success mt-3" onClick={handleAddToCart}>
+            In den Warenkorb
+          </button>
         </div>
       </div>
       <div className="mt-4">
         <h3>Bewertungen</h3>
         {reviews.length > 0 ? (
           reviews.map((review, index) => (
-            <div key={review.id || review._id || index} className="card mb-3 shadow-sm">
+            <div
+              key={review.id || review._id || index}
+              className="card mb-3 shadow-sm"
+            >
               <div className="card-body">
                 <div className="d-flex align-items-center mb-2">
                   <div
@@ -306,7 +327,11 @@ export default function ProductDetailPage() {
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary" disabled={submitting}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={submitting}
+          >
             {submitting ? "Absenden..." : "Bewertung abgeben"}
           </button>
         </form>
@@ -318,7 +343,10 @@ export default function ProductDetailPage() {
           <div style={modalContentStyle}>
             <p>Sind Sie sicher, dass Sie diese Bewertung löschen möchten?</p>
             <div style={{ marginTop: "1rem" }}>
-              <button className="btn btn-danger me-2" onClick={handleConfirmDelete}>
+              <button
+                className="btn btn-danger me-2"
+                onClick={handleConfirmDelete}
+              >
                 Ja
               </button>
               <button

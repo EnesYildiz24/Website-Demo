@@ -10,6 +10,7 @@ import { loginRouter } from "./routes/login";
 import path from "path";
 import { categoryRouter } from "./routes/category";
 import { reviewRouter } from "./routes/review";
+import { cartRouter } from "./routes/cart";
 
 const app = express();
 configureCORS(app);
@@ -25,6 +26,7 @@ app.use("/product", productRouter);
 app.use("/login", loginRouter);
 app.use("/categories", categoryRouter);
 app.use("/reviews", reviewRouter);
+app.use("/cart", cartRouter);
 app.use(errorHandler);
 
 export default app;

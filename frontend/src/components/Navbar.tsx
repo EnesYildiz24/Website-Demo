@@ -27,6 +27,7 @@ export default function Navbar({
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerRole, setRegisterRole] = useState<"seller" | "buyer">("buyer");
   const [registerErrorMsg, setRegisterErrorMsg] = useState<string | null>(null);
+  
   useEffect(() => {
     (async () => {
       const loginStatus = await getLogin();
@@ -133,6 +134,11 @@ export default function Navbar({
               <li className="nav-item">
                 <Link className="nav-link" to="/products">
                   Produkte
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/cart">
+                  <i className="bi bi-cart"></i> Warenkorb
                 </Link>
               </li>
             </ul>
@@ -346,7 +352,6 @@ export default function Navbar({
               </div>
             </div>
           </div>
-          {/* Modal Backdrop */}
           <div className="modal-backdrop fade show"></div>
         </>
       )}
