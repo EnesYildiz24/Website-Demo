@@ -92,14 +92,23 @@ export type ProductResource = {
  * - status: Der Bestellstatus ("pending", "completed", "cancelled").
  * - paymentInfo: Zahlungsinformationen.
  */
-export type OrderResource = {
-  id?: string;
-  buyerId: string;
+// src/Resources.ts
+// src/Resources.ts
+export interface OrderItemResource {
   productId: string;
+  quantity: number;
+  price: number;
+}
+
+export interface OrderResource {
+  id: string;
+  buyerId: string;
+  items: OrderItemResource[];
   orderDate: string;
-  status: string;
+  status: "pending" | "completed" | "cancelled";
   paymentInfo: string;
-};
+  total: number;
+}
 
 /**
  * ReviewResource

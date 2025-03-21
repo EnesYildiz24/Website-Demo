@@ -11,6 +11,7 @@ import path from "path";
 import { categoryRouter } from "./routes/category";
 import { reviewRouter } from "./routes/review";
 import { cartRouter } from "./routes/cart";
+import { orderRouter } from "./routes/order";
 
 const app = express();
 configureCORS(app);
@@ -27,6 +28,7 @@ app.use("/login", loginRouter);
 app.use("/categories", categoryRouter);
 app.use("/reviews", reviewRouter);
 app.use("/cart", cartRouter);
+app.use("/order", orderRouter);
 app.use(errorHandler);
 
 export default app;

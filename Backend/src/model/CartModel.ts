@@ -4,6 +4,15 @@ interface CartItem {
   product: Types.ObjectId;
   quantity: number;
 }
+interface PopulatedCartItem {
+  product: {
+    _id: string;
+    price: number;
+    titel: string;
+  };
+  quantity: number;
+}
+
 
 export interface ICart extends Document {
   user: Types.ObjectId; 

@@ -258,3 +258,26 @@ export async function clearCart() {
 
   return response.json();
 }
+
+export async function checkout() {
+  const response = await fetchWithErrorHandling(`${BASE_URL}/order/checkout`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error("Fehler beim Checkout");
+  }
+  return response.json();
+}
+
+export async function getOrders() {
+  const response = await fetchWithErrorHandling(`${BASE_URL}/order`, {
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Fehler beim Laden der Bestellungen");
+  }
+
+  return response.json();
+}

@@ -8,6 +8,8 @@ import CategoryPage from "./pages/CategoryPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import { AuthProvider } from "./context/AuthContext";
 import ShoppingCartPage from "./pages/ShoppingCartPage";
+import OrdersPage from "./pages/OrdersPage"; 
+import UserPage from "./pages/UserPage";
 
 function App() {
   const [userRole, setUserRole] = useState<"admin" | "seller" | "buyer" | null>(
@@ -34,6 +36,8 @@ function App() {
           <Route path="/product/:productId" element={<ProductDetailPage />} />
           <Route path="/categories" element={<CategoryPage />} />
           <Route path="/cart" element={<ShoppingCartPage />} />
+          <Route path="/orders" element={<OrdersPage />} /> 
+          <Route path="/user" element={<UserPage />} />
           </Routes>
       </div>
     </AuthProvider>

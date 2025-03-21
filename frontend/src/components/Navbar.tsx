@@ -27,7 +27,7 @@ export default function Navbar({
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerRole, setRegisterRole] = useState<"seller" | "buyer">("buyer");
   const [registerErrorMsg, setRegisterErrorMsg] = useState<string | null>(null);
-  
+
   useEffect(() => {
     (async () => {
       const loginStatus = await getLogin();
@@ -169,6 +169,11 @@ export default function Navbar({
                       </li>
                       <li>
                         <hr className="dropdown-divider" />
+                      </li>
+                      <li>
+                        <Link className="dropdown-item" to="/user">
+                          Mein Profil
+                        </Link>
                       </li>
                       <li>
                         <button
