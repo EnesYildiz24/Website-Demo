@@ -52,7 +52,7 @@ productRouter.post(
       return;
     }
     try {
-      const newProduct = await createProduct(req.body);
+      const newProduct = await createProduct(req.body, req.userId!);
       res.status(201).json(newProduct);
     } catch (error) {
       logger.error("Fehler beim Erstellen eines Produkts:", error);

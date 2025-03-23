@@ -60,6 +60,7 @@ interface ProductPayload {
   price: number;
   images: string[];
   category: string;
+  seller?: string;
 }
 export async function createProduct(product: ProductPayload) {
   const response = await fetchWithErrorHandling(`${BASE_URL}/product`, {
@@ -297,4 +298,10 @@ export async function deleteUserById(userId: string) {
     throw new Error("Fehler beim Löschen eines Users");
   }
   return response;
+}
+
+export async function fetchUserById(userId: string) {
+  const response = await fetch(`${BASE_URL}/user/${userId}`, { credentials: "include" });
+  if (!response.ok) throw new Error("Fehler beim Laden des Users");
+  return response.json();
 }

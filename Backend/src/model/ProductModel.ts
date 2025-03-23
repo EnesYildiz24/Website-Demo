@@ -1,4 +1,5 @@
 import { Schema, model, Types, Model } from "mongoose";
+import { IUser } from "./UserModel"; // oder wo immer dein User-Interface liegt
 
 export interface IProduct {
   titel: string;
@@ -6,11 +7,10 @@ export interface IProduct {
   price: number;
   images: string[];
   category: string;
+  seller: Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
 }
-
-export type productModel = Model<IProduct>;
 
 const myProductSchema = new Schema<IProduct>(
   {
@@ -19,13 +19,15 @@ const myProductSchema = new Schema<IProduct>(
     price: { type: Number, required: true, default: 0 },
     images: { type: [String], required: true },
     category: { type: String, required: true },
+    seller: {
+      type: Schema.Types.ObjectId,
+      ref: "User", 
+      required: true,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export const Product = model<IProduct, productModel>(
-  "Product",
-  myProductSchema
-);
+export const Product = model<IProduct>("Product", myProductSchema);

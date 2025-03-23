@@ -7,6 +7,7 @@ import {
   submitReview,
   deleteReview,
   addToCart,
+  fetchUserById,
 } from "../services/api";
 import LoadingIndicator from "../components/LoadingIndicator";
 import { useAuth } from "../context/AuthContext";
@@ -18,6 +19,7 @@ interface Product {
   price: number;
   images: string[];
   category: string;
+  seller?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -147,6 +149,23 @@ export default function ProductDetailPage() {
     loadReviews();
   }, [refreshReviews, productId]);
 
+  // Z.B. in ProductDetailPage.tsx
+  const [sellerName, setSellerName] = useState("");
+
+  useEffect(() => {
+    async function loadSeller() {
+      if (product?.seller) {
+        try {
+          const userData = await fetchUserById(product.seller);
+          setSellerName(userData.username);
+        } catch (err) {
+          console.error("Fehler beim Laden des Sellers:", err);
+        }
+      }
+    }
+    loadSeller();
+  }, [product?.seller]);
+
   async function handleReviewSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
@@ -251,6 +270,7 @@ export default function ProductDetailPage() {
           <p className="card-text">{product.description}</p>
           <p className="fw-bold">Preis: {product.price.toFixed(2)} €</p>
           <p className="text-muted">Kategorie: {product.category}</p>
+          <p>Verkäufer: {sellerName || "unbekannt"}</p>
           <h4>⭐ Durchschnittliche Bewertung: {averageRating}</h4>
           <button className="btn btn-success mt-3" onClick={handleAddToCart}>
             In den Warenkorb

@@ -1,9 +1,11 @@
-import { ProductResource } from "../Resources";
+import { ProductResource, UserResource } from "../Resources";
 import { logger } from "../logger";
 import { Product } from "../model/ProductModel";
+import { IUser, User } from "../model/UserModel";
 
 export async function createProduct(
-  productResource: ProductResource
+  productResource: ProductResource,
+  sellerId: string
 ): Promise<ProductResource> {
   try {
     const product = await Product.create({
@@ -12,6 +14,7 @@ export async function createProduct(
       price: productResource.price,
       images: productResource.images,
       category: productResource.category,
+      seller: sellerId,
     });
     return {
       id: product._id.toString(),
@@ -19,6 +22,7 @@ export async function createProduct(
       description: product.description,
       price: product.price,
       images: product.images,
+      seller: product.seller.toString(),
       category: product.category,
       createdAt: product.createdAt?.toISOString(),
       updatedAt: product.updatedAt?.toISOString(),
@@ -40,6 +44,7 @@ export async function getAllProduct(): Promise<ProductResource[]> {
       titel: product.titel,
       description: product.description,
       price: product.price,
+      seller: product.seller ? product.seller.toString() : "",
       images: product.images,
       category: product.category,
       createdAt: product.createdAt?.toISOString(),
@@ -50,19 +55,21 @@ export async function getAllProduct(): Promise<ProductResource[]> {
     throw new Error("Error fetching Products: " + err);
   }
 }
-export async function getProduct(
-  productId: string
-): Promise<ProductResource> {
+export async function getProduct(productId: string): Promise<ProductResource> {
   try {
     const product = await Product.findById(productId).exec();
     if (!product) {
       throw new Error("No product found");
     }
+    const userDoc = await User.findById(product.seller).exec();
+
     return {
       id: product._id.toString(),
       titel: product.titel,
       description: product.description,
       price: product.price,
+      seller: product.seller.toString(),
+      sellerName: userDoc?.username || "",
       images: product.images,
       category: product.category,
       createdAt: product.createdAt?.toISOString(),
@@ -101,6 +108,7 @@ export async function updateProduct(
       titel: product.titel,
       description: product.description,
       price: product.price,
+      seller: product.seller.toString(),
       images: product.images,
       category: product.category,
       createdAt: product.createdAt?.toISOString(),
@@ -128,6 +136,7 @@ export async function deleteProduct(
       titel: product.titel,
       description: product.description,
       price: product.price,
+      seller: product.seller.toString(),
       images: product.images,
       category: product.category,
       createdAt: product.createdAt?.toISOString(),
@@ -139,7 +148,9 @@ export async function deleteProduct(
   }
 }
 
-export async function getProductByTitle(titel: string): Promise<ProductResource | null> {
+export async function getProductByTitle(
+  titel: string
+): Promise<ProductResource | null> {
   const doc = await Product.findOne({ titel }).exec();
   if (!doc) return null;
 
@@ -148,6 +159,7 @@ export async function getProductByTitle(titel: string): Promise<ProductResource 
     titel: doc.titel,
     description: doc.description,
     price: doc.price,
+    seller: doc.seller ? doc.seller.toString() : "",
     images: doc.images,
     category: doc.category,
     createdAt: doc.createdAt?.toISOString(),

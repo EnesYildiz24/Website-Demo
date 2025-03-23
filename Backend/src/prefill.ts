@@ -92,7 +92,7 @@ export async function prefillDB(): Promise<{
       price: 49.99,
       images: ["http://localhost:3000/static/images/Images.jpeg"],
       category: "Shooter",
-    });
+    },seller.id!);
     logger.info(`Produkt angelegt: ${p1.titel}`);
   } else {
     logger.info(`Produkt ${p1.titel} existiert bereits. Überspringe...`);
@@ -107,7 +107,9 @@ export async function prefillDB(): Promise<{
       price: 29.99,
       images: ["http://localhost:3000/static/images/godOfWar.jpeg"],
       category: "Arcade",
-    });
+      sellerName: seller.username,
+    } ,seller.id!);
+    
     logger.info(`Produkt angelegt: ${p2.titel}`);
   } else {
     logger.info(`Produkt ${p2.titel} existiert bereits. Überspringe...`);
@@ -122,7 +124,7 @@ export async function prefillDB(): Promise<{
       price: 59.99,
       images: ["http://localhost:3000/static/images/Unknown.jpeg"],
       category: "Shooter",
-    });
+    },seller.id!);
     logger.info(`Produkt angelegt: ${p3.titel}`);
   } else {
     logger.info(`Produkt ${p3.titel} existiert bereits. Überspringe...`);
@@ -137,7 +139,7 @@ export async function prefillDB(): Promise<{
       price: 19.99,
       images: ["http://localhost:3000/static/images/bild.jpeg"],
       category: "Shooter",
-    });
+    },seller.id!);
     logger.info(`Produkt angelegt: ${p4.titel}`);
   } else {
     logger.info(`Produkt ${p4.titel} existiert bereits. Überspringe...`);

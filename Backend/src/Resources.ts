@@ -76,6 +76,8 @@ export type ProductResource = {
   description: string;
   price: number;
   images: string[];
+  seller?: string;
+  sellerName?: string;
   category: string;
   createdAt?: string;
   updatedAt?: string;

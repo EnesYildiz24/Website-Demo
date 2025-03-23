@@ -43,10 +43,16 @@ export default function AdminUserManagement() {
 
   // 2) User löschen
   async function handleDeleteUser(userId: string) {
+    const bestaetigen = window.confirm(
+        "Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?"
+      );
+      if (!bestaetigen) {
+        // Abbrechen, wenn der Nutzer „Nein“ drückt
+        return;
+      }
     try {
       // Ruf DELETE /user/:id auf:
       await deleteUserById(userId);
-      // Aus dem lokalen State entfernen
       setUsers((prev) => prev.filter((u) => u.id !== userId));
     } catch (err) {
       setError("Fehler beim Löschen eines Benutzers");

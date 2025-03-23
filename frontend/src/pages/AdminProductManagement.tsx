@@ -1,6 +1,5 @@
 // src/pages/AdminProductManagement.tsx
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
 import {
   fetchProducts,
   createProduct,
@@ -8,100 +7,106 @@ import {
 } from "../services/api";
 
 interface Product {
-  _id: string;         // oder id: string
+  id: string;
   titel: string;
   description: string;
   price: number;
+  images: string[];
   category: string;
-  images?: string[];
+  seller?: string;         // neu: Seller-ID
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export default function AdminProductManagement() {
-  const { user } = useAuth();
+  // State: Liste aller Produkte
   const [products, setProducts] = useState<Product[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  // Fehler-/Ladezustände
   const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Formular für neue Produkte
+  // Formularstates für neues Produkt
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
-  const [newPrice, setNewPrice] = useState(0);
+  const [newPrice, setNewPrice] = useState<number>(0);
   const [newCategory, setNewCategory] = useState("");
   const [newImages, setNewImages] = useState<string>(""); 
-  // Du könntest das z. B. als kommagetrennte Liste eingeben und parsen
+    // Kommagetrennte Bild-URLs
+  const [newSeller, setNewSeller] = useState<string>(""); 
+    // Hier gibst du die Seller-ID ein
 
   useEffect(() => {
-    // Admin-only logic
-    if (!user || user.role !== "admin") {
-      return;
-    }
+    // Beim ersten Rendern: Produkte laden
+    loadProducts();
+  }, []);
 
-    setLoading(true);
-    fetchProducts()
-      .then((data) => {
-        // data sollte ein Array von Products sein
-        setProducts(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Fehler beim Laden der Produkte");
-        setLoading(false);
-      });
-  }, [user]);
-
-  // Produkt löschen
-  const handleDelete = async (productId: string) => {
-    if (!user || user.role !== "admin") return;
-
+  async function loadProducts() {
     try {
-      await deleteProduct(productId);
-      // Lokal aus der Liste entfernen
-      setProducts((prev) => prev.filter((p) => p._id !== productId));
+      setLoading(true);
+      setError(null);
+      const data = await fetchProducts(); // -> Array von Produkten
+      setProducts(data);
     } catch (err) {
       console.error(err);
-      setError("Fehler beim Löschen eines Produkts");
+      setError("Fehler beim Laden der Produkte");
+    } finally {
+      setLoading(false);
     }
-  };
+  }
 
-  // Neues Produkt anlegen
-  const handleCreate = async (e: React.FormEvent) => {
+  async function handleDeleteProduct(productId: string) {
+    if (!window.confirm("Willst du dieses Produkt wirklich löschen?")) {
+      return;
+    }
+    try {
+      await deleteProduct(productId);
+      // Aus local state entfernen:
+      setProducts((prev) => prev.filter((p) => p.id !== productId));
+    } catch (err) {
+      console.error(err);
+      setError("Fehler beim Löschen des Produkts");
+    }
+  }
+
+  async function handleCreateProduct(e: React.FormEvent) {
     e.preventDefault();
-    if (!user || user.role !== "admin") return;
+    // Bilder parsen
+    const imageArray = newImages
+      .split(",")
+      .map((img) => img.trim())
+      .filter((img) => img !== "");
 
     try {
+      // Hier rufen wir createProduct(...) auf
+      // und übergeben seller als newSeller
       const created = await createProduct({
         titel: newTitle,
         description: newDescription,
         price: newPrice,
+        images: imageArray,
         category: newCategory,
-        images: newImages ? newImages.split(",") : [],
+        seller: newSeller, // <--- Wichtig
       });
+      // Im local state hinzufügen:
       setProducts((prev) => [...prev, created]);
-      // Felder leeren
+
+      // Formular zurücksetzen
       setNewTitle("");
       setNewDescription("");
       setNewPrice(0);
       setNewCategory("");
       setNewImages("");
+      setNewSeller("");
     } catch (err) {
       console.error(err);
       setError("Fehler beim Erstellen eines Produkts");
     }
-  };
-
-  if (!user || user.role !== "admin") {
-    return (
-      <div className="container">
-        <h2>Kein Zugriff!</h2>
-        <p>Nur Admins dürfen diese Seite sehen.</p>
-      </div>
-    );
   }
 
   return (
     <div className="container">
       <h2>Admin: Produkte verwalten</h2>
+
       {loading && <p>Produkte werden geladen...</p>}
       {error && <p className="text-danger">{error}</p>}
 
@@ -113,24 +118,26 @@ export default function AdminProductManagement() {
             <th>Beschreibung</th>
             <th>Preis</th>
             <th>Kategorie</th>
+            <th>Seller</th>
             <th>Aktionen</th>
           </tr>
         </thead>
         <tbody>
           {products.map((p) => (
-            <tr key={p._id}>
+            <tr key={p.id}>
               <td>{p.titel}</td>
               <td>{p.description}</td>
-              <td>{p.price}</td>
+              <td>{p.price.toFixed(2)}</td>
               <td>{p.category}</td>
+              <td>{p.seller || "keine Seller-ID"}</td>
               <td>
                 <button
                   className="btn btn-sm btn-danger"
-                  onClick={() => handleDelete(p._id)}
+                  onClick={() => handleDeleteProduct(p.id)}
                 >
                   Löschen
                 </button>
-                {/* Später: Edit-Funktion */}
+                {/* Optional: Button zum Bearbeiten */}
               </td>
             </tr>
           ))}
@@ -140,7 +147,7 @@ export default function AdminProductManagement() {
       {/* Formular zum Anlegen eines neuen Produkts */}
       <hr />
       <h4>Neues Produkt anlegen</h4>
-      <form onSubmit={handleCreate} style={{ maxWidth: "400px" }}>
+      <form onSubmit={handleCreateProduct} style={{ maxWidth: "500px" }}>
         <div className="mb-3">
           <label className="form-label">Titel</label>
           <input
@@ -155,7 +162,6 @@ export default function AdminProductManagement() {
           <label className="form-label">Beschreibung</label>
           <textarea
             className="form-control"
-            rows={3}
             value={newDescription}
             onChange={(e) => setNewDescription(e.target.value)}
             required
@@ -191,6 +197,19 @@ export default function AdminProductManagement() {
             value={newImages}
             onChange={(e) => setNewImages(e.target.value)}
           />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Seller-ID</label>
+          <input
+            type="text"
+            className="form-control"
+            value={newSeller}
+            onChange={(e) => setNewSeller(e.target.value)}
+            placeholder="z.B. 64bcf7..."
+          />
+          <small className="text-muted">
+            Hier die ObjectId des Sellers (oder du nutzt ein Dropdown)
+          </small>
         </div>
         <button type="submit" className="btn btn-primary">
           Erstellen
