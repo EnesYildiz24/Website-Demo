@@ -1,7 +1,7 @@
 import React, { useState, FormEvent, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { logoutUser, loginUser, createUser, getLogin } from "../services/api";
-import { useAuth } from "../context/AuthContext";
+import { useAuth, User } from "../context/AuthContext";
 
 interface NavbarProps {
   onLoginSuccess: (role: "admin" | "seller" | "buyer") => void;
@@ -34,10 +34,14 @@ export default function Navbar({
       if (loginStatus) {
         setUserRole(loginStatus.role);
         setUser({
-          username: loginStatus.username || "",
+          username:
+            loginStatus.username && loginStatus.username.trim().length > 0
+              ? loginStatus.username
+              : "Unknown User",
           role: loginStatus.role,
           id: loginStatus.id,
         });
+        
       } else {
         setUserRole(null);
       }
@@ -49,11 +53,14 @@ export default function Navbar({
     setErrorMsg(null);
     try {
       const result = await loginUser({ email, password });
-      setUser({
+      console.log("Login result:", result);
+      const loggedInUser: User = {
         id: result.id,
-        username: result.username || "",
+        username: result.username || "Unknown User",
         role: result.role,
-      });
+      };
+      setUser(loggedInUser);
+      localStorage.setItem("user", JSON.stringify(loggedInUser));
       onLoginSuccess(result.role);
       setUserRole(result.role);
       setShowLoginModal(false);
@@ -97,6 +104,7 @@ export default function Navbar({
       await logoutUser();
       setUserRole(null);
       setUser(null);
+      localStorage.removeItem("user");
     } catch (error) {
       console.error("Logout fehlgeschlagen", error);
     }

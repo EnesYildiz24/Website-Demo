@@ -1,4 +1,3 @@
-// src/context/AuthContext.tsx
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 export interface User {
@@ -18,17 +17,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Lade den User aus localStorage
     const storedUser = localStorage.getItem("user");
+    console.log("Stored user from localStorage:", storedUser);
     if (storedUser) {
       try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
+        const parsedUser = JSON.parse(storedUser) as Partial<User>;
+        const safeUser: User = {
+          id: parsedUser.id || "",
+          username:
+            parsedUser.username && parsedUser.username.trim().length > 0
+              ? parsedUser.username
+              : "Unknown User",
+          role: parsedUser.role || "guest",
+        };               
+        console.log("Setting safeUser from localStorage:", safeUser);
+        setUser(safeUser);
       } catch (error) {
         console.error("Fehler beim Parsen des gespeicherten Users:", error);
       }
     }
   }, []);
+
+  useEffect(() => {
+    console.log("User changed:", user);
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [user]);
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>

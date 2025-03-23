@@ -120,18 +120,14 @@ export async function getLogin(): Promise<LoginResource | null> {
     const response = await fetchWithErrorHandling(url, {
       credentials: "include",
     });
-
-    if (response.status === 401) {
-      return null;
-    }
+  
     if (!response.ok) {
       if (response.status === 401) {
         return null;
       }
-      throw new Error(
-        `Fehler beim Abrufen des Login-Status: ${response.statusText}`
-      );
+      throw new Error(`Fehler beim Abrufen des Login-Status: ${response.statusText}`);
     }
+  console.log("getLogin API-Antwort:", await response.clone().json());
 
     return await response.json();
   } catch (error) {
@@ -280,4 +276,25 @@ export async function getOrders() {
   }
 
   return response.json();
+}
+
+export async function fetchAllUsers() {
+  const response = await fetchWithErrorHandling(`${BASE_URL}/user`, {
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error("Fehler beim Laden aller User");
+  }
+  return response.json();
+}
+
+export async function deleteUserById(userId: string) {
+  const response = await fetchWithErrorHandling(`${BASE_URL}/user/${userId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error("Fehler beim Löschen eines Users");
+  }
+  return response;
 }

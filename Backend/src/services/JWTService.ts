@@ -57,6 +57,7 @@ export function verifyJWT(jwtString: string | undefined): LoginResource {
       id: userId,
       role: role,
       exp: exp,
+      username: payload.username,
     } as LoginResource;
   } catch (err) {
     throw new JsonWebTokenError(`JWT-Validierung fehlgeschlagen: ${err}`);

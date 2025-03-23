@@ -47,6 +47,7 @@ export function requiresAuthentication(
       validator.isMongoId(payload.sub)
     ) {
       req.userId = payload.sub;
+      req.role = payload.role as "admin" | "seller" | "buyer"; 
       if (!["admin", "seller", "buyer"].includes(payload.role)) {
         res.status(403).send("Forbidden Role");
         return;
@@ -89,6 +90,8 @@ export function optionalAuthentication(
     ) {
       req.userId = payload.sub;
       req.role = payload.role || "guest";
+      (req as any).user = { _id: payload.sub, username: (payload as any).username };
+      req.user = { _id: payload.sub, username: (payload as any).username };
       next();
       return;
     }

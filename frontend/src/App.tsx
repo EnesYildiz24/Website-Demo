@@ -10,6 +10,8 @@ import { AuthProvider } from "./context/AuthContext";
 import ShoppingCartPage from "./pages/ShoppingCartPage";
 import OrdersPage from "./pages/OrdersPage"; 
 import UserPage from "./pages/UserPage";
+import AdminUserManagement from "./pages/AdminUserManagement";
+import AdminProductManagement from "./pages/AdminProductManagement";
 
 function App() {
   const [userRole, setUserRole] = useState<"admin" | "seller" | "buyer" | null>(
@@ -38,6 +40,9 @@ function App() {
           <Route path="/cart" element={<ShoppingCartPage />} />
           <Route path="/orders" element={<OrdersPage />} /> 
           <Route path="/user" element={<UserPage />} />
+          <Route path="/admin/users" element={<AdminUserManagement />} />
+          <Route path="/admin/products" element={<AdminProductManagement />} />
+
           </Routes>
       </div>
     </AuthProvider>

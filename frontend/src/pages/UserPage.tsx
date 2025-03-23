@@ -1,59 +1,79 @@
-// src/pages/UserPage.tsx
 import React from "react";
 import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 export default function UserPage() {
   const { user } = useAuth();
 
   if (!user) {
-    return (
-      <div className="container my-4">
-        <h2>Benutzerbereich</h2>
-        <p>Bitte melde dich an, um deine persönlichen Informationen und Funktionen zu sehen.</p>
-      </div>
-    );
+    return <NotLoggedInView />;
   }
 
-  // Angenommen, user.role ist entweder "admin", "seller" oder "buyer"
   const { username, role } = user;
 
   return (
     <div className="container my-4">
       <h2>Willkommen, {username}!</h2>
+
       {role === "admin" && (
-        <div>
+        <div className="admin-dashboard">
           <h3>Admin Dashboard</h3>
-          <p>Als Administrator hast du Zugriff auf alle Bereiche:</p>
-          <ul>
-            <li>Benutzer verwalten</li>
-            <li>Produkte verwalten</li>
-            <li>Bestellungen überprüfen</li>
-            <li>Berichte einsehen</li>
-          </ul>
+          <div className="row mt-3">
+            <div className="col-md-6 mb-3">
+              <div className="p-3 border bg-light">
+                <h5>Benutzer verwalten</h5>
+                <p>Füge neue Benutzer hinzu, bearbeite oder lösche bestehende.</p>
+                <Link to="/admin/users" className="btn btn-primary">
+                  Verwalten
+                </Link>
+              </div>
+            </div>
+            <div className="col-md-6 mb-3">
+              <div className="p-3 border bg-light">
+                <h5>Produkte verwalten</h5>
+                <p>Verwalte alle Produkte, unabhängig vom Besitzer.</p>
+                <Link to="/admin/products" className="btn btn-primary">
+                  Verwalten
+                </Link>
+              </div>
+            </div>
+          </div>
+          {/* usw... */}
         </div>
       )}
+
       {role === "seller" && (
-        <div>
+        <div className="seller-dashboard mt-4">
           <h3>Seller Dashboard</h3>
           <p>Hier kannst du deine Produkte und Bestellungen verwalten:</p>
           <ul>
-            <li>Eigene Produkte hinzufügen, bearbeiten oder löschen</li>
-            <li>Bestellübersicht einsehen</li>
-            <li>Umsatzstatistiken abrufen</li>
+            <li><Link to="/seller/products">Eigene Produkte verwalten</Link></li>
+            <li><Link to="/seller/orders">Bestellübersicht</Link></li>
+            <li><Link to="/seller/stats">Umsatzstatistiken</Link></li>
           </ul>
         </div>
       )}
+
       {role === "buyer" && (
-        <div>
+        <div className="buyer-dashboard mt-4">
           <h3>Buyer Dashboard</h3>
           <p>Hier findest du deine persönlichen Informationen und Bestellungen:</p>
           <ul>
-            <li>Deine Bestellhistorie ansehen</li>
-            <li>Persönliche Daten bearbeiten</li>
-            <li>Adressverwaltung</li>
+            <li><Link to="/buyer/orders">Bestellhistorie</Link></li>
+            <li><Link to="/buyer/profile">Persönliche Daten bearbeiten</Link></li>
+            <li><Link to="/buyer/addresses">Adressverwaltung</Link></li>
           </ul>
         </div>
       )}
+    </div>
+  );
+}
+
+function NotLoggedInView() {
+  return (
+    <div className="container my-4">
+      <h2>Benutzerbereich</h2>
+      <p>Bitte melde dich an, um deine persönlichen Informationen und Funktionen zu sehen.</p>
     </div>
   );
 }
