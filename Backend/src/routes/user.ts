@@ -80,7 +80,7 @@ userRouter.post(
       .isIn(allowedRoles)
       .withMessage("Rolle muss admin, seller oder buyer sein"),
   ],
-  requiresAuthentication,
+  optionalAuthentication,
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
